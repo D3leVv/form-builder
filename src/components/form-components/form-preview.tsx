@@ -3,9 +3,12 @@ import { MultiStepFormPreview } from "@/components/form-components/multi-step-pr
 import { RenderFormElement } from "@/components/form-components/render-form-element";
 import NoFieldPlaceholder from "@/components/no-field-placeholder";
 import { Button } from "@/components/ui/button";
+import type {
+	FormArray,
+	FormElement,
+} from "@/db-collections/form-builder.collections";
 import { useFormBuilder } from "@/hooks/use-form-builder";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
-import type { FormArray, FormElement } from "@/db-collections/form-builder.collections";
 
 export function SingleStepFormPreview() {
 	const { formElements, formName, isMS } = useFormBuilderState();

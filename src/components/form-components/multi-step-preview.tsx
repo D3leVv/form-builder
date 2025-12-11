@@ -6,11 +6,15 @@ import { FormArrayPreview } from "@/components/form-components/form-array-previe
 import { RenderFormElement } from "@/components/form-components/render-form-element";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import type {
+	FormArray,
+	FormElement,
+	FormStep,
+} from "@/db-collections/form-builder.collections";
 import { useFormBuilder } from "@/hooks/use-form-builder";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import useSettings from "@/hooks/use-settings";
-import type { FormArray, FormElement, FormStep } from "@/db-collections/form-builder.collections";
 
 function collectFieldNames(items: any[]): string[] {
 	const names: string[] = [];
@@ -37,7 +41,7 @@ function collectFieldNames(items: any[]): string[] {
 	return names;
 }
 export function MultiStepFormPreview() {
-	const { formElements  ,} = useFormBuilderState();
+	const { formElements } = useFormBuilderState();
 	const { form, isDefault } = useFormBuilder();
 	const settings = useSettings();
 	const validate =

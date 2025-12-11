@@ -12,7 +12,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { seo } from "@/utils/seo";
 import appCss from "../styles.css?url";
-import DevTools from "@/integrations/tanstack-query/devtools";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -193,7 +192,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							{children}
 						</div>
 					</main>
-					{import.meta.env.DEV && typeof window !== 'undefined' && <DevTools />}
+					{/* {import.meta.env.DEV && typeof window !== 'undefined' && <DevTools />} */}
 					<Toaster richColors />
 				</ThemeProvider>
 				<Scripts />

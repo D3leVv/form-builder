@@ -1,6 +1,11 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Sparkles } from "lucide-react";
+import { useRef, useState } from "react";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { FormEdit } from "@/components/form-components/form-edit";
 import { FieldTab } from "@/components/form-components/form-field-library";
+import { FormGenerator } from "@/components/form-components/form-generator";
 import FormHeader from "@/components/form-components/form-header";
 import { SingleStepFormPreview } from "@/components/form-components/form-preview";
 import { SettingsSidebar } from "@/components/form-components/form-settings";
@@ -9,8 +14,6 @@ import Loader from "@/components/loader";
 import { AnimatedIconButton } from "@/components/ui/animated-icon-button";
 import { BlocksIcon } from "@/components/ui/blocks";
 import { LayoutPanelTopIcon } from "@/components/ui/layout-panel-top";
-import { Sparkles } from "lucide-react";
-import { FormGenerator } from "@/components/form-components/form-generator";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -22,9 +25,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useScreenSize } from "@/hooks/use-screen-size";
 import useSettings from "@/hooks/use-settings";
 import { setActiveTab } from "@/services/form-builder.service";
-import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import type { ImperativePanelHandle } from "react-resizable-panels";
 
 export const Route = createFileRoute("/form-builder/")({
 	head: () => ({
@@ -66,54 +66,33 @@ function FormBuilderComponent() {
 	const TabNavigation = () => (
 		<div className="flex gap-2 p-4 lg:h-14 justify-center items-center content-center text-center self-center w-full border-y border-border">
 			<AnimatedIconButton
-				icon={
-					<BlocksIcon className="-ms-0.5 me-1.5 opacity-60" size={16} />
-				}
-				text={
-					sidebarWidth > 350 || isMobile || isTablet ? "Builder" : ""
-				}
+				icon={<BlocksIcon className="-ms-0.5 me-1.5 opacity-60" size={16} />}
+				text={sidebarWidth > 350 || isMobile || isTablet ? "Builder" : ""}
 				variant={activeTab === "builder" ? "default" : "ghost"}
 				onClick={() => handleSubTabChange("builder")}
 				size="sm"
 			/>
 			<AnimatedIconButton
 				icon={
-					<LayoutPanelTopIcon
-						className="-ms-0.5 me-1.5 opacity-60"
-						size={16}
-					/>
+					<LayoutPanelTopIcon className="-ms-0.5 me-1.5 opacity-60" size={16} />
 				}
-				text={
-					sidebarWidth > 350 || isMobile || isTablet ? "Template" : ""
-				}
+				text={sidebarWidth > 350 || isMobile || isTablet ? "Template" : ""}
 				variant={activeTab === "template" ? "default" : "ghost"}
 				onClick={() => handleSubTabChange("template")}
 				size="sm"
 			/>
 			<AnimatedIconButton
 				icon={
-					<SettingsGearIcon
-						className="-ms-0.5 me-1.5 opacity-60"
-						size={16}
-					/>
+					<SettingsGearIcon className="-ms-0.5 me-1.5 opacity-60" size={16} />
 				}
-				text={
-					sidebarWidth > 350 || isMobile || isTablet ? "Settings" : ""
-				}
+				text={sidebarWidth > 350 || isMobile || isTablet ? "Settings" : ""}
 				variant={activeTab === "settings" ? "default" : "ghost"}
 				onClick={() => handleSubTabChange("settings")}
 				size="sm"
 			/>
 			<AnimatedIconButton
-				icon={
-					<Sparkles
-						className="-ms-0.5 me-1.5 opacity-60"
-						size={16}
-					/>
-				}
-				text={
-					sidebarWidth > 350 || isMobile || isTablet ? "Generate" : ""
-				}
+				icon={<Sparkles className="-ms-0.5 me-1.5 opacity-60" size={16} />}
+				text={sidebarWidth > 350 || isMobile || isTablet ? "Generate" : ""}
 				variant={activeTab === "generate" ? "default" : "ghost"}
 				onClick={() => handleSubTabChange("generate")}
 				size="sm"

@@ -1,14 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getGitHubContributorsOptions } from "@/api/query-options";
 import { ArrowRightIcon } from "lucide-react";
+import { getGitHubContributorsOptions } from "@/api/query-options";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GithubButton } from "@/components/ui/github-button";
 
-
 export function SponsorsContributors() {
-	const { data: contributors = [] } = useSuspenseQuery(getGitHubContributorsOptions());
+	const { data: contributors = [] } = useSuspenseQuery(
+		getGitHubContributorsOptions(),
+	);
 
 	const displayedContributors = contributors.slice(0, 15);
 	const remainingContributors = contributors.length - 15;

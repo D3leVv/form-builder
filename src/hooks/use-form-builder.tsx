@@ -3,12 +3,15 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 import type * as v from "valibot";
 import { revalidateLogic, useAppForm } from "@/components/ui/tanstack-form";
+import type {
+	FormElement,
+	FormStep,
+} from "@/db-collections/form-builder.collections";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
-import { resetFormElements } from "@/services/form-builder.service";
 import { getDefaultFormElement } from "@/lib/form-code-generators/react/generate-default-value";
 import { flattenFormSteps } from "@/lib/form-elements-helpers";
 import { generateValiSchemaObject } from "@/lib/schema-generators/generate-valibot-schema";
-import type { FormElement, FormStep } from "@/db-collections/form-builder.collections";
+import { resetFormElements } from "@/services/form-builder.service";
 import useSettings from "./use-settings";
 
 interface DefaultValues {

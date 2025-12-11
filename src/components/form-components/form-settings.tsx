@@ -7,10 +7,10 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useAppForm } from "@/components/ui/tanstack-form";
 import {
+	FormBuilderSettingsSchema,
 	type PreferredFramework,
 	type PreferredSchema,
 	type ValidationMethod,
-	FormBuilderSettingsSchema,
 } from "@/db-collections/form-builder.collections";
 import useSettings from "@/hooks/use-settings";
 import { setValidationSettings } from "@/services/form-builder.service";
@@ -48,7 +48,6 @@ export function SettingsSidebar() {
 					preferredSchema: formApi.baseStore.state.values.preferredSchema,
 					preferredFramework: formApi.baseStore.state.values.preferredFramework,
 				});
-
 			},
 		},
 	});

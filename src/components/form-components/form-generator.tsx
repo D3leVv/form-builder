@@ -1,19 +1,18 @@
-import { Sparkles, Send } from "lucide-react";
+import { clientTools } from "@tanstack/ai-client";
+import { fetchServerSentEvents, useChat } from "@tanstack/ai-react";
+import { Send, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { v4 as uuid } from "uuid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { useChat, fetchServerSentEvents } from "@tanstack/ai-react";
+import { generateFormDef } from "@/lib/ai/form-tools";
 import {
 	setFormElements,
 	setFormName,
 	setIsMS,
 } from "@/services/form-builder.service";
-import { clientTools } from "@tanstack/ai-client";
-import { generateFormDef } from "@/lib/ai/form-tools";
-import { v4 as uuid } from "uuid";
-
-import { useState } from "react";
 
 export function FormGenerator() {
 	const [input, setInput] = useState("");

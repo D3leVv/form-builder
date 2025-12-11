@@ -27,11 +27,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/components/ui/tanstack-form";
+import type {
+	FormElement,
+	Option,
+} from "@/db-collections/form-builder.collections";
 import type { AppForm } from "@/hooks/use-form-builder";
-import { editElement } from "@/services/form-builder.service";
 import { useListState } from "@/hooks/use-list-state";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { FormElement, Option } from "@/db-collections/form-builder.collections";
+import { editElement } from "@/services/form-builder.service";
 import { isStatic } from "@/utils/utils";
 
 const inputTypes = [

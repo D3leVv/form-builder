@@ -17,6 +17,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SquarePenIcon } from "@/components/ui/square-pen";
 import { useAppForm } from "@/components/ui/tanstack-form";
+import type {
+	FormArray,
+	FormElement,
+	FormElementOrList,
+	FormStep,
+} from "@/db-collections/form-builder.collections";
 import type { AppForm } from "@/hooks/use-form-builder";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
 import {
@@ -31,12 +37,6 @@ import {
 	updateFormArrayField,
 	updateFormArrayProperties,
 } from "@/services/form-builder.service";
-import type {
-	FormArray,
-	FormElement,
-	FormElementOrList,
-	FormStep,
-} from "@/db-collections/form-builder.collections";
 import type { Option } from "@/types/form-types";
 import { isStatic, logger } from "@/utils/utils";
 
@@ -850,10 +850,7 @@ const FormArrayItemContainer = ({
 												...formArrayElement.arrayField,
 											];
 											updatedArrayField[fieldIndex] = newOrder;
-											updateFormArray(
-												formArrayElement.id,
-												updatedArrayField,
-											);
+											updateFormArray(formArrayElement.id, updatedArrayField);
 										}}
 										className="flex items-center justify-start gap-2 w-full"
 										tabIndex={-1}
@@ -1084,9 +1081,7 @@ export function FormEdit() {
 																			variant="ghost"
 																			size="sm"
 																			onClick={() =>
-																				removeFormArray(
-																					formArrayElement.id,
-																				)
+																				removeFormArray(formArrayElement.id)
 																			}
 																			className="h-8 w-8 p-0 text-destructive hover:text-destructive"
 																		>

@@ -2,15 +2,18 @@ import { Plus, Trash2 } from "lucide-react";
 import { RenderFormElement } from "@/components/form-components/render-form-element";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useFormBuilder } from "@/hooks/use-form-builder";
-import useFormBuilderState from "@/hooks/use-form-builder-state";
-import { addFormArrayEntry, removeFormArrayEntry } from "@/services/form-builder.service";
-import { getDefaultFormElement } from "@/lib/form-code-generators/react/generate-default-value";
 import type {
 	FormArray,
 	FormElement,
 	FormElementOrList,
 } from "@/db-collections/form-builder.collections";
+import { useFormBuilder } from "@/hooks/use-form-builder";
+import useFormBuilderState from "@/hooks/use-form-builder-state";
+import { getDefaultFormElement } from "@/lib/form-code-generators/react/generate-default-value";
+import {
+	addFormArrayEntry,
+	removeFormArrayEntry,
+} from "@/services/form-builder.service";
 
 interface FormArrayPreviewProps {
 	formArray: FormArray;

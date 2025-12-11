@@ -94,7 +94,9 @@ export const generateImports = (
 				break;
 			case "FieldDescription":
 			case "FieldLegend": {
-				const hasSeparator = formElements.flat().some((f) => f.fieldType === "Separator");
+				const hasSeparator = formElements
+					.flat()
+					.some((f) => f.fieldType === "Separator");
 				importSet.add(
 					`import { FieldDescription, FieldLegend${hasSeparator ? ", FieldSeparator" : ""} } from "@/components/ui/field"`,
 				);
@@ -145,11 +147,14 @@ export const extractImportDependencies = (
 		if (!fromMatch) continue;
 		const modulePath = fromMatch[1];
 		if (modulePath.includes("@/lib/")) {
-			continue
+			continue;
 		}
 		if (modulePath.startsWith("@/components/")) {
 			const component = modulePath.split("/").pop();
-			if (component && (component === "tanstack-form" || component === "utils")) {
+			if (
+				component &&
+				(component === "tanstack-form" || component === "utils")
+			) {
 				registry.add(
 					`${getRegistryUrl(settings.preferredFramework)}/tanstack-form.json`,
 				);

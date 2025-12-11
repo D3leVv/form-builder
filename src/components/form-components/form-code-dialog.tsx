@@ -2,8 +2,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useId, useState } from "react";
 import * as z from "zod";
 import type { Settings } from "@/components/form-components/types";
+import type {
+	FormArray,
+	FormElement,
+	FormElementOrList,
+} from "@/db-collections/form-builder.collections";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
-import { setFormName } from "@/services/form-builder.service";
 import useSettings from "@/hooks/use-settings";
 import {
 	extractImportDependencies,
@@ -11,13 +15,9 @@ import {
 	generateImports,
 } from "@/lib/form-code-generators";
 import { generateValidationCode } from "@/lib/schema-generators";
-import type {
-	FormArray,
-	FormElement,
-	FormElementOrList,
-} from "@/db-collections/form-builder.collections";
+import { setFormName } from "@/services/form-builder.service";
 import type { CreateRegistryResponse } from "@/types/form-types";
-import { getRegistryUrl, logger } from "@/utils/utils";
+import { logger } from "@/utils/utils";
 import { AnimatedIconButton } from "../ui/animated-icon-button";
 import {
 	InputGroup,
@@ -44,12 +44,7 @@ const formSchema = z.object({
 	formName: z.string().min(1, { message: "Form name is required" }),
 });
 function CodeDialog() {
-	const {
-		formName,
-		formElements,
-		isMS,
-		schemaName,
-	} = useFormBuilderState();
+	const { formName, formElements, isMS, schemaName } = useFormBuilderState();
 	const settings = useSettings();
 	const validationSchema = settings?.preferredSchema || "zod";
 	const [open, setOpen] = useState(false);
@@ -75,10 +70,10 @@ function CodeDialog() {
 		},
 	];
 	const preferredFramework = (settings?.preferredFramework || "react") as
-	| "react"
-	| "solid"
-	| "vue"
-	| "angular";
+		| "react"
+		| "solid"
+		| "vue"
+		| "angular";
 	const generatedCode = generateFormCode({
 		formElements: formElements as FormElementOrList[],
 		isMS,

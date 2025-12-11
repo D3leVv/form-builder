@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { formElementsList } from "@/constants/form-elements-list";
+import type { FormElement } from "@/db-collections/form-builder.collections";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
 import { appendElement } from "@/services/form-builder.service";
-import type { FormElement } from "@/db-collections/form-builder.collections";
 import { ScrollArea } from "../ui/scroll-area";
 
 export function FieldTab() {
@@ -38,11 +38,11 @@ export function FieldTab() {
 				variant="ghost"
 				// size="sm"
 				onClick={() => {
-				appendElement({
-					fieldType: o.fieldType as FormElement["fieldType"],
-					stepIndex: isMS ? (formElements?.length ?? 1) - 1 : undefined,
-				});
-			}}
+					appendElement({
+						fieldType: o.fieldType as FormElement["fieldType"],
+						stepIndex: isMS ? (formElements?.length ?? 1) - 1 : undefined,
+					});
+				}}
 				className="gap-2 justify-start w-full text-sm sm:text-[13px] py-2 sm:py-1.5 h-auto min-h-[44px]"
 			>
 				<div className="flex items-center justify-start gap-2 sm:gap-1.5 flex-1">

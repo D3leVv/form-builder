@@ -28,7 +28,6 @@ import {
 	ResponsiveDialogTitle,
 } from "@/components/ui/revola";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { SettingsGearIcon } from "@/components/ui/settings-gear";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -196,15 +195,9 @@ function RouteComponent() {
 								</div>
 							</div>
 							<div className="flex-1 min-h-0">
-								{activeTab === "columns" && (
-									<TableColumnEdit />
-								)}
-								{activeTab === "templates" && (
-									<TableTemplates />
-								)}
-								{activeTab === "settings" && (
-									<TableSettingsSidebar />
-								)}
+								{activeTab === "columns" && <TableColumnEdit />}
+								{activeTab === "templates" && <TableTemplates />}
+								{activeTab === "settings" && <TableSettingsSidebar />}
 							</div>
 						</div>
 					</ResizablePanel>
@@ -266,15 +259,9 @@ function RouteComponent() {
 										</div>
 										<ScrollBar orientation="horizontal" />
 									</ScrollArea>
-									{activeTab === "columns" && (
-										<TableColumnEdit />
-									)}
-									{activeTab === "templates" && (
-										<TableTemplates />
-									)}
-									{activeTab === "settings" && (
-										<TableSettingsSidebar />
-									)}
+									{activeTab === "columns" && <TableColumnEdit />}
+									{activeTab === "templates" && <TableTemplates />}
+									{activeTab === "settings" && <TableSettingsSidebar />}
 								</div>
 							</div>
 

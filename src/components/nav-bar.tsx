@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getGitHubStarsOptions } from "@/api/query-options";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Suspense } from "react";
+import { getGitHubStarsOptions } from "@/api/query-options";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import AppToggle from "./app-toggle";

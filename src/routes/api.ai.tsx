@@ -1,8 +1,7 @@
 import { chat, toStreamResponse } from "@tanstack/ai";
 import { gemini } from "@tanstack/ai-gemini";
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 import { generateFormDef } from "@/lib/ai/form-tools";
-
 
 const SYSTEM_PROMPT = `You are an expert form generator AI assistant.
 
@@ -82,53 +81,55 @@ const SYSTEM_PROMPT = `You are an expert form generator AI assistant.
 
 When the user describes a form or asks for changes, use the generate_form tool to create or update it.`;
 
+export const Route = createFileRoute("/api/ai")({
+	server: {
+		handlers: {
+			POST: async ({ request }) => {
+				if (!process.env.GOOGLE_API_KEY) {
+					return new Response(
+						JSON.stringify({
+							error: "API not configured",
+						}),
+						{
+							status: 500,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
+				}
 
-export const Route = createFileRoute('/api/ai')({
-  server : {
-    handlers : {
-      POST : async ({request}) => {
-        if (!process.env.GOOGLE_API_KEY) {
-          return new Response(
-            JSON.stringify({
-              error: "API not configured",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        }
+				const abortController = new AbortController();
 
-        const abortController = new AbortController()
+				const { messages, conversationId } = (await request.json()) as {
+					messages: any[];
+					conversationId: string;
+				};
 
-        const { messages, conversationId } = await request.json() as { messages: any[], conversationId: string };
+				try {
+					// Create a streaming chat response
+					const stream = chat({
+						adapter: gemini(),
+						messages,
+						model: "gemini-2.5-flash",
+						conversationId,
+						abortController: abortController,
+						tools: [generateFormDef],
+						systemPrompts: [SYSTEM_PROMPT],
+					});
 
-        try {
-          // Create a streaming chat response
-          const stream = chat({
-            adapter: gemini(),
-            messages,
-            model: "gemini-2.5-flash",
-            conversationId,
-            abortController : abortController,
-            tools: [generateFormDef],
-            systemPrompts : [SYSTEM_PROMPT],
-          });
-
-          // Convert stream to HTTP response
-          return toStreamResponse(stream);
-        } catch (error: any) {
-          return new Response(
-            JSON.stringify({
-              error: error.message || "An error occurred",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        }
-      }
-    }
-  }
-})
+					// Convert stream to HTTP response
+					return toStreamResponse(stream);
+				} catch (error: any) {
+					return new Response(
+						JSON.stringify({
+							error: error.message || "An error occurred",
+						}),
+						{
+							status: 500,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
+				}
+			},
+		},
+	},
+});

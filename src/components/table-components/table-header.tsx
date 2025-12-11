@@ -31,12 +31,12 @@ import {
 	updateSetting,
 	updateTableLayoutSetting,
 } from "@/services/table-builder.service";
+import { getRegistryUrl } from "@/utils/utils";
 import type { Framework } from "../form-components/types";
 import { AnimatedIconButton } from "../ui/animated-icon-button";
 import { RotateCWIcon } from "../ui/rotate-cw";
 import TableCodeDialog from "./table-code-dialog";
 import DataUploadDialog from "./table-data-upload-dialog";
-import { getRegistryUrl } from "@/utils/utils";
 
 export default function TableHeader() {
 	const tableData = useTableStore();

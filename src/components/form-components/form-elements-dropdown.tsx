@@ -10,9 +10,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formElementsList } from "@/constants/form-elements-list";
+import type {
+	FormArray,
+	FormElement,
+} from "@/db-collections/form-builder.collections";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
-import { appendElement, addFormArrayField, updateFormArray } from "@/services/form-builder.service";
-import type { FormArray, FormElement } from "@/db-collections/form-builder.collections";
+import {
+	addFormArrayField,
+	appendElement,
+	updateFormArray,
+} from "@/services/form-builder.service";
 import { logger } from "@/utils/utils";
 import { PlusIcon } from "../ui/plus";
 
@@ -57,10 +64,7 @@ export function FormElementsDropdown({
 			});
 		} else {
 			if (arrayId) {
-				addFormArrayField(
-					arrayId,
-					fieldType as FormElement["fieldType"],
-				);
+				addFormArrayField(arrayId, fieldType as FormElement["fieldType"]);
 			}
 		}
 	};

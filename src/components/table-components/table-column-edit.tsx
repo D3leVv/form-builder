@@ -30,7 +30,13 @@ import { useAppForm } from "@/components/ui/tanstack-form";
 import type { TableBuilder } from "@/db-collections/table-builder.collections";
 import { useForcedTransition } from "@/hooks/use-force-transition";
 import useTableStore from "@/hooks/use-table-store";
-import { addColumn, updateColumn, deleteColumn, reorderColumns, addColumnData } from "@/services/table-builder.service";
+import {
+	addColumn,
+	addColumnData,
+	deleteColumn,
+	reorderColumns,
+	updateColumn,
+} from "@/services/table-builder.service";
 
 import type { ColumnConfig } from "@/types/table-types";
 import { Badge } from "../ui/badge";

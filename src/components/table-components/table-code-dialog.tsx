@@ -6,7 +6,7 @@ import useTableStore from "@/hooks/use-table-store";
 import { generateTable } from "@/lib/table-code-generators/react/index";
 import { setTableName } from "@/services/table-builder.service";
 import type { CreateRegistryResponse } from "@/types/form-types";
-import { getRegistryUrl, logger } from "@/utils/utils";
+import { logger } from "@/utils/utils";
 import { AnimatedIconButton } from "../ui/animated-icon-button";
 import {
 	InputGroup,

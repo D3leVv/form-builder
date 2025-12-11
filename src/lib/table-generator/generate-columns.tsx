@@ -110,10 +110,7 @@ function renderCell(
 		case "email":
 			if (value) {
 				return (
-					<a
-						href={`mailto:${value}`}
-						className="text-primary hover:underline"
-					>
+					<a href={`mailto:${value}`} className="text-primary hover:underline">
 						{String(value)}
 					</a>
 				);
@@ -121,7 +118,9 @@ function renderCell(
 			return <div></div>;
 		case "url":
 			if (value) {
-				const url = String(value).startsWith('http') ? value : `https://${value}`;
+				const url = String(value).startsWith("http")
+					? value
+					: `https://${value}`;
 				return (
 					<a
 						href={url}
@@ -137,10 +136,7 @@ function renderCell(
 		case "tel":
 			if (value) {
 				return (
-					<a
-						href={`tel:${value}`}
-						className="text-primary hover:underline"
-					>
+					<a href={`tel:${value}`} className="text-primary hover:underline">
 						{String(value)}
 					</a>
 				);

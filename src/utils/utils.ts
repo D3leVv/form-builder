@@ -191,7 +191,10 @@ export const detectColumns = (data: JsonData[]) => detectColumnsConfig(data);
 export const getRegistryUrl = (
 	framework?: FormBuilderSettings["preferredFramework"],
 ) => {
-	const baseUrl = import.meta.env.MODE === "development" ? "http://localhost:3000" : "https://tancn.dev";
+	const baseUrl =
+		import.meta.env.MODE === "development"
+			? "http://localhost:3000"
+			: "https://tancn.dev";
 	if (!framework) {
 		return baseUrl;
 	}

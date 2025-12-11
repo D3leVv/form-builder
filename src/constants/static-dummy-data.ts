@@ -260,9 +260,10 @@ export function getStaticData(
 	index: number,
 ): string | number | boolean | object {
 	// Fallback to 'string' if type is not found in STATIC_DUMMY_DATA
-	const validType = type in STATIC_DUMMY_DATA
-		? (type as keyof typeof STATIC_DUMMY_DATA)
-		: "string";
+	const validType =
+		type in STATIC_DUMMY_DATA
+			? (type as keyof typeof STATIC_DUMMY_DATA)
+			: "string";
 	const dataArray = STATIC_DUMMY_DATA[validType];
 	return dataArray[index % dataArray.length]!;
 }

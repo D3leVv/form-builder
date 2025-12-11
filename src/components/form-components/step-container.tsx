@@ -1,7 +1,7 @@
 import { Delete, Plus } from "lucide-react";
 import { UnifiedFormElementsDropdown } from "@/components/form-components/form-elements-dropdown";
 import { Button } from "@/components/ui/button";
-import { removeFormStep, addFormStep } from "@/services/form-builder.service";
+import { addFormStep, removeFormStep } from "@/services/form-builder.service";
 //======================================
 export function StepContainer({
 	children,

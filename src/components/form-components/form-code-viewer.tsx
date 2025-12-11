@@ -9,7 +9,12 @@ import {
 import CopyButton from "@/components/ui/copy-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { FormBuilderSettings } from "@/db-collections/form-builder.collections";
+import type {
+	FormBuilderSettings,
+	FormElement,
+	FormElementOrList,
+	FormStep,
+} from "@/db-collections/form-builder.collections";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
 import useSettings from "@/hooks/use-settings";
 import { generateFormCode } from "@/lib/form-code-generators";
@@ -19,11 +24,6 @@ import {
 	setPreferredFramework,
 	setPreferredSchema,
 } from "@/services/form-builder.service";
-import type {
-	FormElement,
-	FormElementOrList,
-	FormStep,
-} from "@/db-collections/form-builder.collections";
 import {
 	formatCode,
 	getRegistryUrl,
@@ -114,7 +114,15 @@ export function CodeBlockPackagesInstallation({
 	const settings = useSettings();
 	const preferredPackageManager = settings?.preferredPackageManager || "pnpm";
 	const packagesSet = new Set(formElementTypes);
-	const packages = settings?.preferredFramework !== "react" ? Array.from(packagesSet).map(item => `${getRegistryUrl(settings?.preferredFramework)}/${item}.json`).join(" ") : Array.from(packagesSet).join(" ");
+	const packages =
+		settings?.preferredFramework !== "react"
+			? Array.from(packagesSet)
+					.map(
+						(item) =>
+							`${getRegistryUrl(settings?.preferredFramework)}/${item}.json`,
+					)
+					.join(" ")
+			: Array.from(packagesSet).join(" ");
 	const formPackage =
 		settings?.preferredFramework === "solid"
 			? "@tanstack/solid-form"

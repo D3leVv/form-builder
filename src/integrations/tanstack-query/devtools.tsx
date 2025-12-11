@@ -1,8 +1,8 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
 const DevTools = () => {
 	return (
 		<TanStackDevtools
@@ -22,8 +22,8 @@ const DevTools = () => {
 				},
 			]}
 			eventBusConfig={{
-        connectToServerBus: true,
-      }}
+				connectToServerBus: true,
+			}}
 		/>
 	);
 };

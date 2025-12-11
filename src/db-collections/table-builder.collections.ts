@@ -1,6 +1,6 @@
 import {
 	createCollection,
-	localStorageCollectionOptions
+	localStorageCollectionOptions,
 } from "@tanstack/react-db";
 import * as v from "valibot";
 
@@ -100,7 +100,6 @@ export type TableBuilder = v.InferOutput<typeof TableBuilderSchema>;
 // 			}),
 // 		),
 // 	)();
-
 
 const tableBuilderCollection = createCollection(
 	localStorageCollectionOptions({

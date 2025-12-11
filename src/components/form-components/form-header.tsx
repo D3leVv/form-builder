@@ -25,12 +25,13 @@ import { useFormBuilder } from "@/hooks/use-form-builder";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
 import useSettings from "@/hooks/use-settings";
 import {
-	setPreferredFramework,
-	setPreferredSchema,
-	setIsMS,
 	addFormArray,
 	saveFormTemplate,
+	setIsMS,
+	setPreferredFramework,
+	setPreferredSchema,
 } from "@/services/form-builder.service";
+import { getRegistryUrl } from "@/utils/utils";
 import {
 	AnimatedIconButton,
 	AnimatedIconSpan,
@@ -38,13 +39,10 @@ import {
 import { ChevronDownIcon } from "../ui/chevron-down";
 import { HeartIcon } from "../ui/heart";
 import { LayersIcon } from "../ui/layers";
-
 import { RotateCWIcon } from "../ui/rotate-cw";
-
 import { ShareIcon } from "../ui/share";
 import CodeDialog from "./form-code-dialog";
 import type { Framework, ValidationSchema } from "./types";
-import { getRegistryUrl } from "@/utils/utils";
 
 export default function FormHeader() {
 	const location = useLocation();
@@ -92,7 +90,10 @@ export default function FormHeader() {
 									<AnimatedIconButton
 										icon={<ChevronDownIcon className="w-4 h-4 ml-1" />}
 										text={
-											(settings?.preferredFramework ?? "react")?.charAt(0).toUpperCase() + (settings?.preferredFramework ?? "react")?.slice(1)
+											(settings?.preferredFramework ?? "react")
+												?.charAt(0)
+												.toUpperCase() +
+											(settings?.preferredFramework ?? "react")?.slice(1)
 										}
 										variant="ghost"
 										size="sm"
@@ -122,7 +123,9 @@ export default function FormHeader() {
 									<AnimatedIconButton
 										icon={<ChevronDownIcon className="w-4 h-4 ml-1" />}
 										text={
-											(settings?.preferredSchema ?? "zod")?.charAt(0).toUpperCase() +
+											(settings?.preferredSchema ?? "zod")
+												?.charAt(0)
+												.toUpperCase() +
 											(settings?.preferredSchema ?? "zod")?.slice(1)
 										}
 										variant="ghost"
@@ -168,11 +171,7 @@ export default function FormHeader() {
 							/>
 						</div>
 						<div className="h-4 w-px bg-border" />
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => addFormArray([])}
-						>
+						<Button variant="ghost" size="sm" onClick={() => addFormArray([])}>
 							<Brackets className="w-4 h-4 mr-1" />
 							<span className="hidden xl:block ml-1">Field Array</span>
 						</Button>

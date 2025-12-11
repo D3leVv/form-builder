@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { templates } from "@/constants/templates";
 import {
-	setTemplate,
+	deleteFormTemplate,
 	getSavedFormTemplates,
 	loadFormTemplate,
-	deleteFormTemplate,
+	setTemplate,
 } from "@/services/form-builder.service";
 
 const formTemplates = Object.entries(templates).map((template) => ({
@@ -25,7 +25,13 @@ export function TemplateSidebar() {
 
 	// Load saved forms on component mount
 	useEffect(() => {
-		setSavedForms(getSavedFormTemplates().map(t => ({ id: t.id, name: t.name, createdAt: t.createdAt })));
+		setSavedForms(
+			getSavedFormTemplates().map((t) => ({
+				id: t.id,
+				name: t.name,
+				createdAt: t.createdAt,
+			})),
+		);
 	}, []);
 
 	const handleLoadSavedForm = (formId: string) => {
@@ -36,7 +42,13 @@ export function TemplateSidebar() {
 			toast("Failed to load form");
 		}
 		// Refresh the saved forms list after loading
-		setSavedForms(getSavedFormTemplates().map(t => ({ id: t.id, name: t.name, createdAt: t.createdAt })));
+		setSavedForms(
+			getSavedFormTemplates().map((t) => ({
+				id: t.id,
+				name: t.name,
+				createdAt: t.createdAt,
+			})),
+		);
 	};
 
 	const handleDeleteSavedForm = (formId: string, formName: string) => {
@@ -46,7 +58,13 @@ export function TemplateSidebar() {
 		} else {
 			toast("Failed to delete form");
 		}
-		setSavedForms(getSavedFormTemplates().map(t => ({ id: t.id, name: t.name, createdAt: t.createdAt })));
+		setSavedForms(
+			getSavedFormTemplates().map((t) => ({
+				id: t.id,
+				name: t.name,
+				createdAt: t.createdAt,
+			})),
+		);
 	};
 
 	const filteredTemplates = searchQuery
@@ -82,7 +100,9 @@ export function TemplateSidebar() {
 											{template.name}
 										</Button>
 										<Button
-											onClick={() => handleDeleteSavedForm(template.id, template.name)}
+											onClick={() =>
+												handleDeleteSavedForm(template.id, template.name)
+											}
 											size="sm"
 											variant="ghost"
 											className="text-destructive hover:text-destructive"
