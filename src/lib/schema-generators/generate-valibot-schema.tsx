@@ -475,7 +475,7 @@ export const getValiSchemaStringDirect = (
 
 	let code = `import * as v from "valibot"
 
-export const ${schemaName}Schema = v.object({
+export const ${schemaName} = v.object({
 ${schemaEntries}
 });`;
 
@@ -499,7 +499,7 @@ ${schemaEntries}
 
 		code += `
 
-export const ${schemaName}SchemaSteps = [
+export const ${schemaName}Steps = [
 ${stepSchemasStr}
 ];`;
 	}

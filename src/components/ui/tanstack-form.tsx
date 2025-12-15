@@ -203,6 +203,7 @@ function SubmitButton({
 				<Button
 					className={className}
 					size={size}
+					variant={props.variant}
 					type="submit"
 					disabled={isSubmitting}
 					{...props}

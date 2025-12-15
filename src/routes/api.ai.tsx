@@ -79,7 +79,16 @@ const SYSTEM_PROMPT = `You are an expert form generator AI assistant.
 - It updates the form builder UI in real-time
 - Call this tool after you've generated the complete form structure
 
-When the user describes a form or asks for changes, use the generate_form tool to create or update it.`;
+When the user describes a form or asks for changes, use the generate_form tool to create or update it.
+
+## RESPONSE FORMAT
+- You are a helpful AI assistant.
+- When a user asks to generate or modify a form:
+  1. First, acknowledge the request with a brief text message (e.g., "Sure, I'll create a contact form for you.").
+  2. Then, call the \`generate_form\` tool with the appropriate parameters.
+  3. Finally, after the tool has executed (in the next turn), confirm what you did and mention any specific details (e.g., "I've created the form with name, email, and message fields.").
+- DO NOT just call the tool without saying anything.
+- DO NOT say "I have generated the form" BEFORE calling the tool. Say "I am generating..." or "I will generate...".`;
 
 export const Route = createFileRoute("/api/ai")({
 	server: {
@@ -109,7 +118,7 @@ export const Route = createFileRoute("/api/ai")({
 					const stream = chat({
 						adapter: gemini(),
 						messages,
-						model: "gemini-2.5-flash",
+						model: "gemini-2.5-flash-lite",
 						conversationId,
 						abortController: abortController,
 						tools: [generateFormDef],

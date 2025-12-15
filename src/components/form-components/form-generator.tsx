@@ -1,10 +1,13 @@
 import { clientTools } from "@tanstack/ai-client";
 import { fetchServerSentEvents, useChat } from "@tanstack/ai-react";
-import { Send, Sparkles } from "lucide-react";
+import { Bot, Loader2, Send, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
+import { AnimatedBotIcon } from "@/components/ui/animated-bot-icon";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { generateFormDef } from "@/lib/ai/form-tools";
@@ -263,71 +266,114 @@ export function FormGenerator() {
 							</div>
 						</>
 					) : (
-						<div className="space-y-4">
+						<div className="space-y-6">
 							{messages.map((message) => (
 								<div
 									key={message.id}
-									className={`p-3 rounded-lg ${
-										message.role === "assistant"
-											? "bg-muted/50"
-											: "bg-primary/10"
+									className={`flex gap-3 ${
+										message.role === "user" ? "flex-row-reverse" : "flex-row"
 									}`}
 								>
-									<div className="font-semibold text-sm mb-1 text-muted-foreground">
-										{message.role === "assistant" ? "Assistant" : "You"}
-									</div>
-									<div className="space-y-2">
-										{message.parts.map((part, idx) => {
-											if (part.type === "text") {
-												return (
-													<div key={idx} className="text-sm">
-														{part.content}
-													</div>
-												);
+									<Avatar className="h-8 w-8">
+										<AvatarFallback
+											className={
+												message.role === "assistant"
+													? "bg-primary/10 text-primary"
+													: "bg-muted text-muted-foreground"
 											}
-											if (
-												part.type === "tool-call" &&
-												part.name === "generate_form"
-											) {
-												const output = part.output as {
-													success?: boolean;
-													fieldCount?: number;
-													message?: string;
-												};
-												const fieldCount = output?.fieldCount || 0;
-												const success = output?.success !== false;
-												return (
-													<div
-														key={idx}
-														className={`flex items-center gap-2 text-sm p-2 rounded-md ${
-															success
-																? "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30"
-																: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30"
-														}`}
-													>
-														<Sparkles className="w-4 h-4" />
-														<span>
-															✓ Generated {fieldCount} form field
-															{fieldCount !== 1 ? "s" : ""}
-														</span>
-													</div>
-												);
-											}
-											return null;
-										})}
+										>
+											{message.role === "assistant" ? (
+												<AnimatedBotIcon size={24} className={`${isLoading ? "rounded-full border-2 border-primary animate-pulse" : ""}`}/>
+											) : (
+												<User className="h-4 w-4" />
+											)}
+										</AvatarFallback>
+									</Avatar>
+									<div
+										className={`flex flex-col gap-2 max-w-[85%] ${
+											message.role === "user" ? "items-end" : "items-start"
+										}`}
+									>
+										{/* <div className="text-xs text-muted-foreground">
+											{message.role === "assistant" ? "Assistant" : "You"}
+										</div> */}
+										<div className="space-y-2">
+											{message.parts.map((part, idx) => {
+												if (part.type === "text") {
+													return (
+														<div
+															key={idx}
+															className={`text-sm p-3 rounded-lg ${
+																message.role === "user"
+																	? "bg-primary text-primary-foreground"
+																	: "bg-muted/50"
+															}`}
+														>
+															{part.content}
+														</div>
+													);
+												}
+												if (
+													part.type === "tool-call" &&
+													part.name === "generate_form"
+												) {
+													const output = part.output as
+														| {
+																success?: boolean;
+																fieldCount?: number;
+																message?: string;
+														  }
+														| undefined;
+													const isPending = !output;
+													const fieldCount = output?.fieldCount || 0;
+													const success = output?.success !== false;
+
+													return (
+														<Card
+															key={idx}
+															className="p-3 my-2 border shadow-sm w-full"
+														>
+															<div className="flex items-center gap-3">
+																<div
+																	className={`p-2 rounded-full ${
+																		isPending
+																			? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+																			: success
+																				? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+																				: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+																	}`}
+																>
+																	{isPending ? (
+																		<Loader2 className="w-4 h-4 animate-spin" />
+																	) : (
+																		<Sparkles className="w-4 h-4" />
+																	)}
+																</div>
+																<div className="flex-1">
+																	<div className="font-medium text-sm">
+																		{isPending
+																			? "Generating form..."
+																			: success
+																				? "Form Generated"
+																				: "Generation Failed"}
+																	</div>
+																	<div className="text-xs text-muted-foreground">
+																		{isPending
+																			? "AI is building your form structure"
+																			: output?.message ||
+																				`Successfully created ${fieldCount} fields`}
+																	</div>
+																</div>
+															</div>
+														</Card>
+													);
+												}
+												return null;
+											})}
+										</div>
 									</div>
 								</div>
 							))}
-							{isLoading && (
-								<div className="p-3 rounded-lg bg-muted/50">
-									<div className="font-semibold text-sm mb-1 text-muted-foreground">
-										Assistant
-									</div>
-									<div className="text-sm text-muted-foreground animate-pulse">
-										Thinking...
-									</div>
-								</div>
-							)}
 						</div>
 					)}
 				</div>

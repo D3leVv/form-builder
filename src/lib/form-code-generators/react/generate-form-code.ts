@@ -147,7 +147,6 @@ export const generateFormCode = ({
 ${imports}
 
 export function ${componentName}() {
- const isDefault = useStore(${variableName}.store, (state) => state.isDefaultValue);
 
  const ${variableName} = useAppForm({
    defaultValues: ${getDefaultValuesString(validationSchema, schemaName, formElements)},
@@ -176,6 +175,7 @@ export function ${componentName}() {
 			: ""
 	}
 });
+const isDefault = useStore(${variableName}.store, (state) => state.isDefaultValue);
 
 return (
   <div>
@@ -187,9 +187,7 @@ return (
 							? `
          <div className="flex justify-end items-center w-full pt-3 gap-3">
          {!isDefault &&
-							<Button type="button" onClick={() => ${variableName}.reset()} className="rounded-lg" variant='outline' size="sm">
-										Reset
-							</Button>
+							<${variableName}.SubmitButton type="button" label="Reset" variant="outline" onClick={() => ${variableName}.reset()} className="rounded-lg" variant='outline' size="sm" />
 						}
          <${variableName}.SubmitButton label="Submit" />
         </div>`
@@ -277,7 +275,6 @@ return (
       handleNextStepOrSubmit,
     } = useFormStepper(stepSchemas);
 
-    const isDefault = useStore(${variableName}.store, (state) => state.isDefaultValue);
 
     const ${variableName} = useAppForm({
       defaultValues: ${getDefaultValuesString(validationSchema, schemaName, formElements)},
@@ -290,6 +287,7 @@ return (
         toast.success("Submitted Successfully");
       },
     });
+    const isDefault = useStore(${variableName}.store, (state) => state.isDefaultValue);
 
     const groups: Record<number, React.ReactNode> = {
       ${Array.from({ length: (formElements as FormStep[]).length }, (_, i) => {
