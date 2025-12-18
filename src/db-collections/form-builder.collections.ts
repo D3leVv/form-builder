@@ -209,10 +209,9 @@ const FormElementSchema: v.GenericSchema<any> = v.lazy(() =>
 	]),
 );
 
-const FormElementOrListSchema = v.union([
-	FormElementSchema,
-	v.array(FormElementSchema),
-]);
+const FormElementOrListSchema = v.lazy(() =>
+	v.union([FormElementSchema, v.array(FormElementSchema)]),
+);
 
 const FormElementListSchema = v.array(FormElementOrListSchema);
 

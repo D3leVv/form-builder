@@ -1,16 +1,3 @@
-import { Popover as PopoverPrimitive } from "@kobalte/core/popover";
-import { Check, ChevronUp, X } from "lucide-solid";
-import type { ComponentProps, JSX, ValidComponent } from "solid-js";
-import {
-	createContext,
-	createEffect,
-	createMemo,
-	createSignal,
-	For,
-	Show,
-	splitProps,
-	useContext,
-} from "solid-js";
 import { Badge } from "@/components/ui/badge";
 import {
 	Command,
@@ -24,6 +11,7 @@ import {
 } from "@/components/ui/command";
 import {
 	Popover,
+	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import {
@@ -33,7 +21,18 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cx } from "@/utils/utils";
-
+import { Check, ChevronUp, X } from "lucide-solid";
+import type { ComponentProps, JSX, ValidComponent } from "solid-js";
+import {
+	createContext,
+	createEffect,
+	createMemo,
+	createSignal,
+	For,
+	Show,
+	splitProps,
+	useContext,
+} from "solid-js";
 export interface MultiSelectOptionItem {
 	value: string;
 	label?: JSX.Element;
@@ -361,38 +360,37 @@ export const MultiSelectContent = <T extends ValidComponent = "div">(
 	const context = useMultiSelect();
 
 	return (
-		<PopoverPrimitive.Portal>
-			<PopoverPrimitive.Content
-				data-slot="popover-content"
-				align="start"
-				sideOffset={4}
-				onOpenAutoFocus={(e: Event) => {
-					// Prevent auto-focus on open
-					e.preventDefault();
-				}}
-				onCloseAutoFocus={(e: Event) => {
-					// Prevent auto-focus when closing
-					e.preventDefault();
-				}}
-				onFocusOutside={(e: Event) => {
-					// ALWAYS prevent focus outside from closing
-					// This is the key - focus changing shouldn't close the popover
-					e.preventDefault();
-				}}
-				class={cx(
-					"z-50 w-full rounded-sm border border-dashed bg-popover p-0 text-popover-foreground shadow-md outline-hidden data-expanded:animate-in data-closed:animate-out data-closed:fade-out-0 data-expanded:fade-in-0 data-closed:zoom-out-95 data-expanded:zoom-in-95",
-					local.class,
-				)}
-				{...rest}
+		<PopoverContent
+			data-slot="popover-content"
+			align="start"
+			sideOffset={4}
+			onOpenAutoFocus={(e: Event) => {
+				// Prevent auto-focus on open
+				e.preventDefault();
+			}}
+			onCloseAutoFocus={(e: Event) => {
+				// Prevent auto-focus when closing
+				e.preventDefault();
+			}}
+			onFocusOutside={(e: Event) => {
+				// ALWAYS prevent focus outside from closing
+				// This is the key - focus changing shouldn't close the popover
+				e.preventDefault();
+			}}
+			class={cx(
+				"z-50 w-full rounded-sm border border-dashed bg-popover p-0 text-popover-foreground shadow-md outline-hidden data-expanded:animate-in data-closed:animate-out data-closed:fade-out-0 data-expanded:fade-in-0 data-closed:zoom-out-95 data-expanded:zoom-in-95",
+				"min-w-(--kb-popper-anchor-width)",
+				local.class,
+			)}
+			{...rest}
+		>
+			<Command
+				class={cx("px-1 max-h-96 w-full")}
+				shouldFilter={!context.onSearch}
 			>
-				<Command
-					class={cx("px-1 max-h-96 w-full")}
-					shouldFilter={!context.onSearch}
-				>
-					{local.children}
-				</Command>
-			</PopoverPrimitive.Content>
-		</PopoverPrimitive.Portal>
+				{local.children}
+			</Command>
+		</PopoverContent>
 	);
 };
 

@@ -41,16 +41,18 @@ import {
     const [, rest] = splitProps(props as PopoverContentProps, ["class"])
 
     return (
-      <PopoverPrimitive.Content
-        data-slot="popover-content"
-        align="start"
-        sideOffset={4}
-        class={cx(
-          "bg-popover text-popover-foreground data-[expanded]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[expanded]:fade-in-0 data-[closed]:zoom-out-95 data-[expanded]:zoom-in-95 z-50 w-72 origin-(--kb-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
-          "[[data-popper-positioner][style*='--kb-popper-content-transform-origin:_top']>[data-slot=popover-content]]:slide-in-from-top-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_bottom']>[data-slot=popover-content]]:slide-in-from-bottom-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_left']>[data-slot=popover-content]]:slide-in-from-left-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_right']>[data-slot=popover-content]]:slide-in-from-right-2",
-          props.class,
-        )}
-        {...rest}
-      />
+      <PopoverPortal>
+        <PopoverPrimitive.Content
+          data-slot="popover-content"
+          align="start"
+          sideOffset={4}
+          class={cx(
+            "bg-popover text-popover-foreground data-[expanded]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[expanded]:fade-in-0 data-[closed]:zoom-out-95 data-[expanded]:zoom-in-95 z-50 w-72 origin-(--kb-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+            "[[data-popper-positioner][style*='--kb-popper-content-transform-origin:_top']>[data-slot=popover-content]]:slide-in-from-top-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_bottom']>[data-slot=popover-content]]:slide-in-from-bottom-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_left']>[data-slot=popover-content]]:slide-in-from-left-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_right']>[data-slot=popover-content]]:slide-in-from-right-2",
+            props.class,
+          )}
+          {...rest}
+        />
+      </PopoverPortal>
     )
   }

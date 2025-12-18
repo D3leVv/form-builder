@@ -99,17 +99,19 @@ export const SelectContent = <T extends ValidComponent = "div">(
 	const [, rest] = splitProps(props as SelectContentProps, ["class"]);
 
 	return (
-		<SelectPrimitive.Content
-			data-slot="select-content"
-			class={cx(
-				"bg-popover text-popover-foreground data-[expanded]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[expanded]:fade-in-0 data-[closed]:zoom-out-95 data-[expanded]:zoom-in-95 relative z-50 min-w-[8rem] origin-(--kb-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
-				"[[data-popper-positioner][style*='--kb-popper-content-transform-origin:_top']>[data-slot=select-content]]:slide-in-from-top-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_bottom']>[data-slot=select-content]]:slide-in-from-bottom-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_left']>[data-slot=select-content]]:slide-in-from-left-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_right']>[data-slot=select-content]]:slide-in-from-right-2",
-				props.class,
-			)}
-			{...rest}
-		>
-			<SelectPrimitive.Listbox class="p-1 outline-none" />
-		</SelectPrimitive.Content>
+		<SelectPortal>
+			<SelectPrimitive.Content
+				data-slot="select-content"
+				class={cx(
+					"bg-popover text-popover-foreground data-[expanded]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[expanded]:fade-in-0 data-[closed]:zoom-out-95 data-[expanded]:zoom-in-95 relative z-50 min-w-[8rem] origin-(--kb-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
+					"[[data-popper-positioner][style*='--kb-popper-content-transform-origin:_top']>[data-slot=select-content]]:slide-in-from-top-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_bottom']>[data-slot=select-content]]:slide-in-from-bottom-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_left']>[data-slot=select-content]]:slide-in-from-left-2 [[data-popper-positioner][style*='--kb-popper-content-transform-origin:_right']>[data-slot=select-content]]:slide-in-from-right-2",
+					props.class,
+				)}
+				{...rest}
+			>
+				<SelectPrimitive.Listbox class="p-1 outline-none" />
+			</SelectPrimitive.Content>
+		</SelectPortal>
 	);
 };
 
