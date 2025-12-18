@@ -40,7 +40,9 @@ export function FieldTab() {
 				onClick={() => {
 					appendElement({
 						fieldType: o.fieldType as FormElement["fieldType"],
-						stepIndex: isMS ? (formElements?.length ?? 1) - 1 : undefined,
+						stepIndex: isMS
+							? Math.max(0, ((formElements as FormElement)?.length ?? 1) - 1)
+							: undefined,
 					});
 				}}
 				className="gap-2 justify-start w-full text-sm sm:text-[13px] py-2 sm:py-1.5 h-auto min-h-[44px]"

@@ -98,35 +98,35 @@ export const Route = createFileRoute("/api/ai")({
 		handlers: {
 			POST: async ({ request, context }) => {
 				try {
-				const ip = request.headers.get("cf-connecting-ip") || "unknown";
-				const { success } = await context.env.AI_RATE_LIMITER.limit({
-					key: ip,
-				});
-
-				if (!success) {
-					return new Response("Rate limit exceeded. Try again later.", {
-						status: 429,
+					const ip = request.headers.get("cf-connecting-ip") || "unknown";
+					const { success } = await context.env.AI_RATE_LIMITER.limit({
+						key: ip,
 					});
-				}
 
-				if (!process.env.GOOGLE_API_KEY) {
-					return new Response(
-						JSON.stringify({
-							error: "API not configured",
-						}),
-						{
-							status: 500,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
-				}
+					if (!success) {
+						return new Response("Rate limit exceeded. Try again later.", {
+							status: 429,
+						});
+					}
 
-				const abortController = new AbortController();
+					if (!process.env.GOOGLE_API_KEY) {
+						return new Response(
+							JSON.stringify({
+								error: "API not configured",
+							}),
+							{
+								status: 500,
+								headers: { "Content-Type": "application/json" },
+							},
+						);
+					}
 
-				const { messages, conversationId } = (await request.json()) as {
-					messages: any[];
-					conversationId: string;
-				};
+					const abortController = new AbortController();
+
+					const { messages, conversationId } = (await request.json()) as {
+						messages: any[];
+						conversationId: string;
+					};
 
 					// Create a streaming chat response
 
@@ -155,7 +155,7 @@ export const Route = createFileRoute("/api/ai")({
 						}),
 						{
 							status: 500,
-							statusText : error.message,
+							statusText: error.message,
 							headers: { "Content-Type": "application/json" },
 						},
 					);
@@ -163,4 +163,4 @@ export const Route = createFileRoute("/api/ai")({
 			},
 		},
 	},
-})
+});

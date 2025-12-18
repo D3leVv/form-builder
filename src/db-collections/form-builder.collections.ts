@@ -238,13 +238,11 @@ const FormStepSchema = v.object({
 // ============================================================================
 // Unified Form Builder Schema
 // ============================================================================
-
 // The top-level formElements can be a list of elements (single or row) OR a list of steps
-const FormElementsSchema = v.union([
-	FormElementListSchema,
-	v.array(FormStepSchema),
-	v.array(FormArraySchema), // Less likely at top level but possible by type def
-]);
+const FormElementsSchema = v.custom((input) => {
+	// Allow any array-like structure for formElements
+	return Array.isArray(input);
+}, "FormElements must be an array");
 
 export const FormBuilderSchema = v.object({
 	id: v.number(),

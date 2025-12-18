@@ -1,9 +1,3 @@
-import { clientTools } from "@tanstack/ai-client";
-import { fetchServerSentEvents, useChat } from "@tanstack/ai-react";
-import { AlertTriangle, Circle, Loader2, Send, Sparkles, Square, User, X } from "lucide-react";
-import { useState } from "react";
-import { v4 as uuid } from "uuid";
-import * as z from "zod";
 import { AnimatedBotIcon } from "@/components/ui/animated-bot-icon";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +13,20 @@ import {
 	setIsMS,
 } from "@/services/form-builder.service";
 import { cn } from "@/utils/utils";
+import { clientTools } from "@tanstack/ai-client";
+import { fetchServerSentEvents, useChat } from "@tanstack/ai-react";
+import {
+	Circle,
+	Loader2,
+	Send,
+	Sparkles,
+	User
+} from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
-
+import { v4 as uuid } from "uuid";
+import * as z from "zod";
 
 const formGeneratorSchema = z.object({
 	input: z.string().min(1, "Please describe your form"),
@@ -50,7 +55,7 @@ export function FormGenerator() {
 	}>({});
 
 	const [chatError, setChatError] = useState<string | null>(null);
-	const [isPending , setIsPending]= useState(false);
+	const [isPending, setIsPending] = useState(false);
 
 	// Normalize field to match Valibot schema requirements
 	const normalizeField = (field: any): any => {
@@ -181,7 +186,9 @@ export function FormGenerator() {
 		if (elements.length < 2) return false;
 		const first = Array.isArray(elements[0]) ? elements[0][0] : elements[0];
 		const second = Array.isArray(elements[1]) ? elements[1][0] : elements[1];
-		return first?.fieldType === "H1" && second?.fieldType === "FieldDescription";
+		return (
+			first?.fieldType === "H1" && second?.fieldType === "FieldDescription"
+		);
 	};
 
 	// Create header elements from title and description
@@ -207,7 +214,6 @@ export function FormGenerator() {
 	// Client tool that updates form state when AI calls it with generated form data
 	const generateFormTool = generateFormDef.client(
 		({ title, description, isMultiStep, formElements, steps }) => {
-
 			try {
 				let fieldCount = 0;
 
@@ -217,8 +223,16 @@ export function FormGenerator() {
 					const stepsWithIds = steps.map((step: any, index: number) => {
 						let stepFields = processElements(step.stepFields || []);
 						// Add header to first step only if not already present
-						if (index === 0 && title && description && !hasHeaderElements(stepFields)) {
-							stepFields = [...createHeaderElements(title, description), ...stepFields];
+						if (
+							index === 0 &&
+							title &&
+							description &&
+							!hasHeaderElements(stepFields)
+						) {
+							stepFields = [
+								...createHeaderElements(title, description),
+								...stepFields,
+							];
 						}
 						return {
 							id: step.id || uuid(),
@@ -238,7 +252,10 @@ export function FormGenerator() {
 
 					// Prepend header elements if not already present
 					if (title && description && !hasHeaderElements(elementsWithIds)) {
-						elementsWithIds = [...createHeaderElements(title, description), ...elementsWithIds];
+						elementsWithIds = [
+							...createHeaderElements(title, description),
+							...elementsWithIds,
+						];
 					}
 
 					// setFormElements also sets isMS internally based on the structure
@@ -268,17 +285,17 @@ export function FormGenerator() {
 		},
 	);
 
-	const { messages, sendMessage, isLoading , stop} = useChat({
+	const { messages, sendMessage, isLoading, stop } = useChat({
 		connection: fetchServerSentEvents("/api/ai"),
 		tools: clientTools(generateFormTool),
 		onError: () => {
 			// Set error state for UI display
 			toast.error("An error occurred during chat.");
 		},
-		onResponse : () => setIsPending(true),
-		onFinish : () => {
+		onResponse: () => setIsPending(true),
+		onFinish: () => {
 			setIsPending(false);
-		}
+		},
 	});
 
 	// No useEffect needed - the client tool handles the action directly when called
@@ -322,7 +339,7 @@ export function FormGenerator() {
 										title: "Event Registration with Payment",
 										prompt: `Generate an event registration form with attendee name, email, phone, ticket type (select: VIP, Standard, Student), number of tickets (slider 1-10), dietary restrictions (checkboxes), and a special requests textarea.`,
 									},
-													{
+									{
 										title: "Multi-Step Job Application",
 										prompt: `Generate a multi-step job application form.
 Step 1: Personal info (first name and last name side by side, email, phone).
@@ -335,10 +352,20 @@ Include validations for required fields and clear step titles.`,
 									<Button
 										key={i}
 										variant="ghost"
-										onClick={() => formGeneratorForm.setFieldValue("input", suggestion.prompt)}
-										className={cn("flex flex-start justify-start w-full text-left bg-background pl-1 py-1 rounded-none",i !== 4 ? "border-b" : "")}
+										onClick={() =>
+											formGeneratorForm.setFieldValue(
+												"input",
+												suggestion.prompt,
+											)
+										}
+										className={cn(
+											"flex flex-start justify-start w-full text-left bg-background pl-1 py-1 rounded-none",
+											i !== 4 ? "border-b" : "",
+										)}
 									>
-										<span className="font-medium text-left text-foreground">{suggestion.title}</span>
+										<span className="font-medium text-left text-foreground">
+											{suggestion.title}
+										</span>
 									</Button>
 								))}
 							</div>
@@ -465,10 +492,14 @@ Include validations for required fields and clear step titles.`,
 						<formGeneratorForm.AppField name="input">
 							{(field) => (
 								<field.Field>
-									<div className={cn(
-										"relative rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring",
-										chatError ? "border-destructive dark:border-destructive" : "border-input"
-									)}>
+									<div
+										className={cn(
+											"relative rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring",
+											chatError
+												? "border-destructive dark:border-destructive"
+												: "border-input",
+										)}
+									>
 										{/* Error Banner inside container */}
 										{/* {chatError && (
 											<div className="flex items-center justify-between gap-2 px-1 py-1 text-sm bg-destructive dark:bg-destructive/30 border-b border-destructive/20 dark:border-destructive/80 text-destructive dark:text-destructive rounded-t-lg">
