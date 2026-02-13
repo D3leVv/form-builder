@@ -21,6 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteIcon } from "@/components/ui/delete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import {
 	Select,
 	SelectContent,
@@ -41,16 +42,27 @@ type FieldType =
 	| "Date Picker"
 	| "Password"
 	| "Email"
-	| "Heading";
+	| "Heading"
+	| "ToggleGroup";
 
-type FormElement = {
+type BaseFormElement = {
 	id: string;
-	type: FieldType;
 	label: string;
 	placeholder?: string;
 	required?: boolean;
 	options?: string[];
+	/** For fields with options: true at index i means option i is disabled */
+	disabledOptions?: boolean[];
 };
+
+type ToggleGroupFormElement = BaseFormElement & {
+	type: "ToggleGroup";
+	toggleType: "single" | "multiple";
+};
+
+type FormElement =
+	| (BaseFormElement & { type: Exclude<FieldType, "ToggleGroup"> })
+	| ToggleGroupFormElement;
 
 const availableFields: { type: FieldType; icon: any; label: string }[] = [
 	{ type: "Checkbox", icon: CheckSquare, label: "Checkbox" },
@@ -62,6 +74,7 @@ const availableFields: { type: FieldType; icon: any; label: string }[] = [
 	{ type: "Switch", icon: ToggleLeft, label: "Switch" },
 	{ type: "Textarea", icon: Text, label: "Textarea" },
 	{ type: "Heading", icon: Heading1, label: "Heading 1" },
+	{ type: "ToggleGroup", icon: ToggleLeft, label: "Toggle Group" },
 ];
 
 const initialElements: FormElement[] = [
@@ -88,6 +101,13 @@ const initialElements: FormElement[] = [
 		required: true,
 	},
 	{ id: "5", type: "Checkbox", label: "I agree to the terms and conditions" },
+	{
+		id: "6",
+		type: "ToggleGroup",
+		label: "Toggle Group",
+		toggleType: "single",
+		options: ["Option 1", "Option 2"],
+	},
 ];
 
 function FieldItem({
@@ -115,11 +135,14 @@ function FieldItem({
 function EditorItem({
 	element,
 	onDelete,
+	onUpdate,
 }: {
 	element: FormElement;
 	onDelete: (id: string) => void;
+	onUpdate: (id: string, updates: Partial<FormElement>) => void;
 }) {
 	const dragControls = useDragControls();
+	const [expanded, setExpanded] = useState(false);
 
 	return (
 		<Reorder.Item
@@ -129,7 +152,10 @@ function EditorItem({
 			dragControls={dragControls}
 			className="relative group bg-card border border-border rounded-lg mb-2 overflow-hidden"
 		>
-			<div className="flex items-center p-3 gap-3">
+			<div
+				className="flex items-center p-3 gap-3 cursor-pointer"
+				onClick={() => setExpanded(!expanded)}
+			>
 				<div
 					className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded touch-none text-muted-foreground hover:text-foreground transition-colors"
 					onPointerDown={(e) => dragControls.start(e)}
@@ -144,25 +170,128 @@ function EditorItem({
 					variant="ghost"
 					size="icon"
 					className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-					onClick={() => onDelete(element.id)}
+					onClick={(e) => {
+						e.stopPropagation();
+						onDelete(element.id);
+					}}
 				>
 					<DeleteIcon size={16} />
 				</Button>
-				<div className="opacity-0 group-hover:opacity-100 transition-opacity">
+				<div
+					className={cn(
+						"opacity-0 group-hover:opacity-100 transition-all",
+						expanded && "opacity-100 rotate-180",
+					)}
+				>
 					<ChevronDown size={16} className="text-muted-foreground" />
 				</div>
 			</div>
+			{expanded && element.type === "ToggleGroup" && (
+				<div
+					className="px-3 pb-3 pt-0 space-y-3 border-t border-border/50"
+					onClick={(e) => e.stopPropagation()}
+				>
+					<div>
+						<Label className="text-xs">Selection mode</Label>
+						<Select
+							value={element.toggleType}
+							onValueChange={(value: "single" | "multiple") =>
+								onUpdate(element.id, { toggleType: value })
+							}
+						>
+							<SelectTrigger className="mt-1.5 h-8">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="single">Single</SelectItem>
+								<SelectItem value="multiple">Multiple</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+					<div>
+						<Label className="text-xs">Options</Label>
+						<div className="mt-1.5 space-y-2">
+							{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
+								const disabledOptions = element.disabledOptions ?? [];
+								const isDisabled = disabledOptions[i] ?? false;
+								return (
+									<div
+										key={`${element.id}-opt-${i}`}
+										className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-1.5"
+									>
+										<span className="text-sm truncate">{opt}</span>
+										<div className="flex items-center gap-2 shrink-0">
+											<span className="text-xs text-muted-foreground">
+												Disable
+											</span>
+											<Switch
+												checked={isDisabled}
+												onCheckedChange={(checked) => {
+													const updated = [...disabledOptions];
+													while (updated.length <= i) updated.push(false);
+													updated[i] = checked === true;
+													onUpdate(element.id, {
+														disabledOptions: updated,
+													});
+												}}
+											/>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				</div>
+			)}
+			{expanded && element.type === "Select" && (
+					<div
+						className="px-3 pb-3 pt-0 border-t border-border/50"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<Label className="text-xs">Options</Label>
+						<div className="mt-1.5 space-y-2">
+							{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
+								const disabledOptions = element.disabledOptions ?? [];
+								const isDisabled = disabledOptions[i] ?? false;
+								return (
+									<div
+										key={`${element.id}-opt-${i}`}
+										className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-1.5"
+									>
+										<span className="text-sm truncate">{opt}</span>
+										<div className="flex items-center gap-2 shrink-0">
+											<span className="text-xs text-muted-foreground">
+												Disable
+											</span>
+											<Switch
+												checked={isDisabled}
+												onCheckedChange={(checked) => {
+													const updated = [...disabledOptions];
+													while (updated.length <= i) updated.push(false);
+													updated[i] = checked === true;
+													onUpdate(element.id, {
+														disabledOptions: updated,
+													});
+												}}
+											/>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				)}
 		</Reorder.Item>
 	);
 }
 
 function PreviewForm({ elements }: { elements: FormElement[] }) {
 	const formSchema = useMemo(() => {
-		const schemaShape: Record<string, any> = {};
+		const schemaShape: Record<string, z.ZodTypeAny> = {};
 		elements.forEach((element) => {
 			if (element.type === "Heading") return;
 
-			let validator: any;
+			let validator: z.ZodTypeAny;
 			switch (element.type) {
 				case "Email":
 					validator = z.string().email("Invalid email address");
@@ -174,17 +303,30 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 				case "Date Picker":
 					validator = z.date().optional();
 					break;
+				case "ToggleGroup":
+					validator =
+						element.toggleType === "multiple"
+							? z.array(z.string())
+							: z.string();
+					break;
 				default:
 					validator = z.string();
 			}
 
 			if (element.required) {
 				if (element.type === "Checkbox" || element.type === "Switch") {
-					validator = validator.refine((val: boolean) => val === true, {
+					validator = validator.refine((val: unknown) => val === true, {
 						message: "This field is required",
 					});
 				} else if (element.type !== "Date Picker") {
-					validator = validator.min(1, "This field is required");
+					validator = validator.refine(
+						(val: unknown) => {
+							if (typeof val === "string") return val.length >= 1;
+							if (Array.isArray(val)) return val.length >= 1;
+							return false;
+						},
+						{ message: "This field is required" },
+					);
 				}
 			} else {
 				if (element.type !== "Checkbox" && element.type !== "Switch") {
@@ -201,11 +343,14 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 		defaultValues: elements.reduce(
 			(acc, el) => {
 				if (el.type === "Heading") return acc;
-				acc[el.id] =
-					el.type === "Checkbox" || el.type === "Switch" ? false : "";
+				if (el.type === "ToggleGroup")
+					acc[el.id] = el.toggleType === "multiple" ? [] : "";
+				else
+					acc[el.id] =
+						el.type === "Checkbox" || el.type === "Switch" ? false : "";
 				return acc;
 			},
-			{} as Record<string, any>,
+			{} as Record<string, unknown>,
 		),
 		validators: {
 			onChange: formSchema,
@@ -259,41 +404,41 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 								)}
 
 								{element.type === "Input" ||
-								element.type === "Email" ||
-								element.type === "Password" ? (
+									element.type === "Email" ||
+									element.type === "Password" ? (
 									<Input
 										id={element.id}
 										placeholder={element.placeholder}
 										type={element.type.toLowerCase()}
-										value={field.state.value}
+										value={(field.state.value as string) ?? ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										className={cn(
 											field.state.meta.errors.length > 0 &&
-												"border-destructive focus-visible:ring-destructive",
+											"border-destructive focus-visible:ring-destructive",
 										)}
 									/>
 								) : element.type === "Textarea" ? (
 									<Textarea
 										id={element.id}
 										placeholder={element.placeholder}
-										value={field.state.value}
+										value={(field.state.value as string) ?? ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										className={cn(
 											field.state.meta.errors.length > 0 &&
-												"border-destructive focus-visible:ring-destructive",
+											"border-destructive focus-visible:ring-destructive",
 										)}
 									/>
 								) : element.type === "Checkbox" ? (
 									<div className="flex items-center space-x-2">
 										<Checkbox
 											id={element.id}
-											checked={field.state.value}
+											checked={field.state.value as boolean | undefined}
 											onCheckedChange={(checked) => field.handleChange(checked)}
 											className={cn(
 												field.state.meta.errors.length > 0 &&
-													"border-destructive",
+												"border-destructive",
 											)}
 										/>
 										<Label
@@ -301,7 +446,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 											className={cn(
 												"font-normal",
 												field.state.meta.errors.length > 0 &&
-													"text-destructive",
+												"text-destructive",
 											)}
 										>
 											{element.label}{" "}
@@ -314,27 +459,38 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 									<div className="flex items-center space-x-2">
 										<Switch
 											id={element.id}
-											checked={field.state.value}
+											checked={field.state.value as boolean | undefined}
 											onCheckedChange={(checked) => field.handleChange(checked)}
 										/>
 										<Label htmlFor={element.id}>{element.label}</Label>
 									</div>
 								) : element.type === "Select" ? (
 									<Select
-										value={field.state.value}
+										value={(field.state.value as string) ?? undefined}
 										onValueChange={field.handleChange}
 									>
 										<SelectTrigger
 											className={cn(
 												field.state.meta.errors.length > 0 &&
-													"border-destructive focus:ring-destructive",
+												"border-destructive focus:ring-destructive",
 											)}
 										>
 											<SelectValue placeholder="Select an option" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="option1">Option 1</SelectItem>
-											<SelectItem value="option2">Option 2</SelectItem>
+											{(element.options ?? ["Option 1", "Option 2"]).map(
+												(opt, i) => (
+													<SelectItem
+														key={`${element.id}-${i}`}
+														value={`option-${i}`}
+														disabled={
+															(element.disabledOptions ?? [])[i] ?? false
+														}
+													>
+														{opt}
+													</SelectItem>
+												),
+											)}
 										</SelectContent>
 									</Select>
 								) : element.type === "Date Picker" ? (
@@ -344,13 +500,65 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 											"w-full justify-start text-left font-normal",
 											"text-muted-foreground",
 											field.state.meta.errors.length > 0 &&
-												"border-destructive text-destructive",
+											"border-destructive text-destructive",
 										)}
 									>
 										<Calendar className="mr-2 h-4 w-4" />
 										<span>Pick a date</span>
 									</Button>
-								) : null}
+								) :
+									element.type === "ToggleGroup" ? (
+										element.toggleType === "multiple" ? (
+											<ToggleGroup
+												type="multiple"
+												value={(field.state.value as string[]) ?? []}
+												onValueChange={field.handleChange}
+												className={cn(
+													field.state.meta.errors.length > 0 &&
+													"border-destructive focus:ring-destructive",
+												)}
+											>
+												{(element.options ?? ["Option 1", "Option 2"]).map(
+													(opt, i) => (
+														<ToggleGroupItem
+															key={`${element.id}-${i}`}
+															value={`option-${i}`}
+															disabled={
+																(element.disabledOptions ?? [])[i] ?? false
+															}
+														>
+															{opt}
+														</ToggleGroupItem>
+													),
+												)}
+											</ToggleGroup>
+										) : (
+											<ToggleGroup
+												type="single"
+												value={(field.state.value as string) ?? ""}
+												onValueChange={field.handleChange}
+												className={cn(
+													field.state.meta.errors.length > 0 &&
+													"border-destructive focus:ring-destructive",
+												)}
+											>
+												{(element.options ?? ["Option 1", "Option 2"]).map(
+													(opt, i) => (
+														<ToggleGroupItem
+															key={`${element.id}-${i}`}
+															value={`option-${i}`}
+															disabled={
+																(element.disabledOptions ?? [])[i] ?? false
+															}
+														>
+															{opt}
+														</ToggleGroupItem>
+													),
+												)}
+											</ToggleGroup>
+										)
+									) : null
+								}
 
 								{field.state.meta.errors.length > 0 && (
 									<p className="text-xs text-destructive font-medium">
@@ -391,18 +599,44 @@ export function FormBuilderTab() {
 	const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
 
 	const handleAddField = (type: FieldType) => {
-		const newElement: FormElement = {
-			id: Math.random().toString(36).substr(2, 9),
-			type,
-			label: type === "Heading" ? "New Heading" : `New ${type}`,
-			placeholder: `Enter ${type.toLowerCase()}`,
-			required: false,
-		};
+		const newElement: FormElement =
+			type === "ToggleGroup"
+				? {
+						id: Math.random().toString(36).substr(2, 9),
+						type: "ToggleGroup",
+						label: "New Toggle Group",
+						required: false,
+						toggleType: "single",
+						options: ["Option 1", "Option 2"],
+					}
+				: type === "Select"
+					? {
+							id: Math.random().toString(36).substr(2, 9),
+							type: "Select",
+							label: "New Select",
+							required: false,
+							options: ["Option 1", "Option 2"],
+						}
+					: {
+							id: Math.random().toString(36).substr(2, 9),
+							type,
+							label: type === "Heading" ? "New Heading" : `New ${type}`,
+							placeholder: `Enter ${type.toLowerCase()}`,
+							required: false,
+						};
 		setElements([...elements, newElement]);
 	};
 
 	const handleDelete = (id: string) => {
 		setElements(elements.filter((el) => el.id !== id));
+	};
+
+	const handleUpdate = (id: string, updates: Partial<FormElement>) => {
+		setElements(
+			elements.map((el) =>
+				el.id === id ? { ...el, ...updates } : el,
+			) as FormElement[],
+		);
 	};
 
 	return (
@@ -496,6 +730,7 @@ export function FormBuilderTab() {
 								key={element.id}
 								element={element}
 								onDelete={handleDelete}
+								onUpdate={handleUpdate}
 							/>
 						))}
 					</Reorder.Group>
