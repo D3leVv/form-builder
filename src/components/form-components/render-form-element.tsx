@@ -294,12 +294,15 @@ export const RenderFormElement = ({
 										field.state.meta.isTouched
 									}
 								>
-									{formElement.options.map(({ label, value }) => (
+									{formElement.options.map(({ label, value }, i) => (
 										<div key={value} className="flex items-center gap-x-2">
 											<RadioGroupItem
 												value={value}
 												id={value}
 												required={formElement.required}
+												disabled={
+													formElement.disabledOptions?.[i] ?? false
+												}
 											/>
 											<Label htmlFor={value}>{label}</Label>
 										</div>
@@ -312,12 +315,14 @@ export const RenderFormElement = ({
 				</form.AppField>
 			);
 		case "ToggleGroup": {
-			const options = formElement.options.map(({ label, value }) => (
+			const options = formElement.options.map(({ label, value }, i) => (
 				<ToggleGroupItem
 					name={formElement.name}
 					value={value}
 					key={value}
-					disabled={formElement.disabled}
+					disabled={
+						formElement.disabled || (formElement.disabledOptions?.[i] ?? false)
+					}
 					className="flex items-center gap-x-2 px-1"
 				>
 					{label}
@@ -338,8 +343,9 @@ export const RenderFormElement = ({
 									<ToggleGroup
 										type="single"
 										variant="outline"
+										value={(field.state.value as string | undefined) ?? ""}
 										onValueChange={field.handleChange}
-										defaultValue={formElement.defaultValue || ""}
+										disabled={formElement.disabled}
 										className="flex justify-start items-center w-full"
 										aria-invalid={
 											!!field.state.meta.errors.length &&
@@ -352,16 +358,9 @@ export const RenderFormElement = ({
 									<ToggleGroup
 										type="multiple"
 										variant="outline"
+										value={(field.state.value as string[] | undefined) ?? []}
 										onValueChange={field.handleChange}
-										defaultValue={
-											Array.isArray(formElement.defaultValue)
-												? formElement.defaultValue.filter(
-														(val) => val !== undefined,
-													)
-												: formElement.defaultValue
-													? [formElement.defaultValue]
-													: []
-										}
+										disabled={formElement.disabled}
 										className="flex justify-start items-center w-full"
 										aria-invalid={
 											!!field.state.meta.errors.length &&
@@ -495,7 +494,6 @@ export const RenderFormElement = ({
 								name={formElement.name}
 								value={(field.state.value as string | undefined) ?? ""}
 								onValueChange={field.handleChange}
-								defaultValue={String(field?.state.value ?? "")}
 								disabled={formElement.disabled}
 								aria-invalid={
 									!!field.state.meta.errors.length && field.state.meta.isTouched
@@ -509,8 +507,12 @@ export const RenderFormElement = ({
 									</SelectTrigger>
 								</field.Field>
 								<SelectContent>
-									{formElement.options.map(({ label, value }) => (
-										<SelectItem key={value} value={value}>
+									{formElement.options.map(({ label, value }, i) => (
+										<SelectItem
+											key={value}
+											value={value}
+											disabled={formElement.disabledOptions?.[i] ?? false}
+										>
 											{label}
 										</SelectItem>
 									))}
@@ -560,8 +562,14 @@ export const RenderFormElement = ({
 										</MultiSelectTrigger>
 										<MultiSelectContent>
 											<MultiSelectList>
-												{formElement.options.map(({ label, value }) => (
-													<MultiSelectItem key={value} value={value}>
+												{formElement.options.map(({ label, value }, i) => (
+													<MultiSelectItem
+														key={value}
+														value={value}
+														disabled={
+															formElement.disabledOptions?.[i] ?? false
+														}
+													>
 														{label}
 													</MultiSelectItem>
 												))}

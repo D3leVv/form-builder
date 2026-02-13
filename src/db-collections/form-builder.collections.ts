@@ -93,6 +93,8 @@ const RadioGroupSchema = v.object({
 	...SharedFormPropsSchema.entries,
 	fieldType: v.literal("RadioGroup"),
 	options: v.array(OptionSchema),
+	/** For options: true at index i means option i is disabled */
+	disabledOptions: v.optional(v.array(v.boolean())),
 });
 
 const ToggleGroupSchema = v.object({
@@ -100,6 +102,8 @@ const ToggleGroupSchema = v.object({
 	fieldType: v.literal("ToggleGroup"),
 	options: v.array(OptionSchema),
 	type: v.union([v.literal("single"), v.literal("multiple")]),
+	/** For options: true at index i means option i is disabled */
+	disabledOptions: v.optional(v.array(v.boolean())),
 });
 
 const SwitchSchema = v.object({
@@ -122,6 +126,8 @@ const SelectSchema = v.object({
 	fieldType: v.literal("Select"),
 	options: v.array(OptionSchema),
 	placeholder: v.string(),
+	/** For options: true at index i means option i is disabled */
+	disabledOptions: v.optional(v.array(v.boolean())),
 });
 
 const MultiSelectSchema = v.object({
@@ -129,6 +135,8 @@ const MultiSelectSchema = v.object({
 	fieldType: v.literal("MultiSelect"),
 	options: v.array(OptionSchema),
 	placeholder: v.string(),
+	/** For options: true at index i means option i is disabled */
+	disabledOptions: v.optional(v.array(v.boolean())),
 });
 
 const DatePickerSchema = v.object({

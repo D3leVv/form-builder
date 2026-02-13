@@ -55,12 +55,16 @@ type Checkbox = {
 type RadioGroup = {
 	fieldType: "RadioGroup";
 	options: Option[];
+	/** For options: true at index i means option i is disabled */
+	disabledOptions?: boolean[];
 } & RadioGroupProps &
 	SharedFormProps;
 //------------------------------
 type ToggleGroupBaseProps = {
 	fieldType: "ToggleGroup";
 	options: Option[];
+	/** For options: true at index i means option i is disabled */
+	disabledOptions?: boolean[];
 };
 
 type ToggleGroupSingle = ToggleGroupBaseProps &
@@ -93,6 +97,8 @@ type Select = {
 	 */
 	options: Option[];
 	placeholder: string;
+	/** For options: true at index i means option i is disabled */
+	disabledOptions?: boolean[];
 } & React.SelectHTMLAttributes<HTMLSelectElement> &
 	SharedFormProps;
 
@@ -103,6 +109,8 @@ type MultiSelect = {
 	 */
 	options: Option[];
 	placeholder: string;
+	/** For options: true at index i means option i is disabled */
+	disabledOptions?: boolean[];
 } & React.InputHTMLAttributes<HTMLInputElement> &
 	SharedFormProps;
 type DatePicker = {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import type {
 	FormArray,
 	FormElement,
+	FormElementOrList,
 } from "@/db-collections/form-builder.collections";
 import { useFormBuilder } from "@/hooks/use-form-builder";
 import useFormBuilderState from "@/hooks/use-form-builder-state";
@@ -13,7 +14,10 @@ import useFormBuilderState from "@/hooks/use-form-builder-state";
 export function SingleStepFormPreview() {
 	const { formElements, formName, isMS } = useFormBuilderState();
 	const { form, isDefault } = useFormBuilder();
-	if (!formElements || formElements.length < 1)
+	const elements = (Array.isArray(formElements)
+		? formElements
+		: []) as FormElementOrList[];
+	if (elements.length < 1)
 		return (
 			<NoFieldPlaceholder
 				title="No Field To Preview Yet"
@@ -28,7 +32,7 @@ export function SingleStepFormPreview() {
 					{isMS ? (
 						<MultiStepFormPreview />
 					) : (
-						formElements.map((element, i) => {
+						elements.map((element, i) => {
 							// Check if element is a FormArray
 							if (
 								typeof element === "object" &&
