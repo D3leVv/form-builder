@@ -1,3 +1,4 @@
+import type * as React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { RenderFormElement } from "@/components/form-components/render-form-element";
 import { Button } from "@/components/ui/button";
@@ -22,15 +23,19 @@ interface FormArrayPreviewProps {
 
 export function FormArrayPreview({ formArray }: FormArrayPreviewProps) {
 	const { formElements } = useFormBuilderState();
+	const elements = (Array.isArray(formElements) ? formElements : []) as (
+		| FormArray
+		| FormElementOrList
+	)[];
 
 	// Get the latest FormArray from the store to ensure reactivity
-	const currentFormArray = formElements.find(
-		(el) =>
+	const currentFormArray = elements.find(
+		(el): el is FormArray =>
 			typeof el === "object" &&
 			el !== null &&
 			"arrayField" in el &&
-			el.id === formArray.id,
-	) as FormArray | undefined;
+			(el as FormArray).id === formArray.id,
+	);
 	const { form } = useFormBuilder();
 	const arrayToUse = currentFormArray || formArray;
 	const defaultValue = getDefaultFormElement(arrayToUse.arrayField);
@@ -39,7 +44,7 @@ export function FormArrayPreview({ formArray }: FormArrayPreviewProps) {
 			{form.Field({
 				name: arrayToUse.name,
 				mode: "array",
-				children: (field) => (
+				children: (field: any) => (
 					<>
 						<div className="space-y-3">
 							<Separator />
@@ -115,7 +120,7 @@ export function FormArrayPreview({ formArray }: FormArrayPreviewProps) {
 						</div>
 					</>
 				),
-			})}
+			}) as React.ReactNode}
 		</div>
 	);
 }

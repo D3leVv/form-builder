@@ -39,6 +39,7 @@ import {
 } from "@/services/form-builder.service";
 import type { Option } from "@/types/form-types";
 import { isStatic, logger } from "@/utils/utils";
+import { Switch } from "../ui/switch";
 
 const getTransitionProps = (isLayoutTransitioning: boolean) => ({
 	transition: isLayoutTransitioning
@@ -96,6 +97,7 @@ function OptionsList({
 	const [editingOption, setEditingOption] = useState<Option>({
 		value: "",
 		label: "",
+		disabled: false,
 	});
 
 	useEffect(() => {
@@ -217,6 +219,16 @@ function OptionsList({
 													}
 													placeholder="Option value"
 													className="h-8 text-sm"
+												/>
+											</div>
+											<div className="flex-1">
+												<Label className="text-xs text-muted-foreground">Disabled</Label>
+												<Switch
+													className='data-[state=unchecked]:!bg-background'
+													checked={editingOption.disabled ?? false}
+													onCheckedChange={(checked: boolean) => {
+														setEditingOption({ ...editingOption, disabled: checked });
+													}}
 												/>
 											</div>
 										</div>
@@ -520,10 +532,16 @@ const FormElementEditor = ({
 							/>
 						)}
 						{isFieldWithOptions && (
-							<OptionsList
-								options={formElement.options || []}
-								onChange={(options) => form.setFieldValue("options", options)}
-							/>
+							<form.AppField name="options">
+								{(field) => (
+									<OptionsList
+										options={formElement.options || []}
+										onChange={(options) => {
+											field.handleChange(options);
+										}}
+									/>
+								)}
+							</form.AppField>
 						)}
 						<div className="flex items-center w-full gap-4 justify-start">
 							<div>
@@ -567,8 +585,8 @@ const EditFormItem = (props: EditFormItemProps) => {
 		"label" in element && element?.label !== null && element?.label !== ""
 			? element?.label
 			: "content" in element &&
-					element?.content !== null &&
-					element?.content !== ""
+				element?.content !== null &&
+				element?.content !== ""
 				? element?.content
 				: "name" in element && element?.name !== null && element?.name !== ""
 					? element?.name
@@ -1222,7 +1240,7 @@ export function FormEdit() {
 				</div>
 			);
 		default:
-			if (formElements.length === 0) {
+			if ((formElements as FormElement[]).length === 0) {
 				return <NoFieldPlaceholder />;
 			}
 			return (

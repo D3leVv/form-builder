@@ -294,17 +294,17 @@ export const RenderFormElement = ({
 										field.state.meta.isTouched
 									}
 								>
-									{formElement.options.map(({ label, value }, i) => (
-										<div key={value} className="flex items-center gap-x-2">
+									{formElement.options.map((option, i) => (
+										<div key={option.value} className="flex items-center gap-x-2">
 											<RadioGroupItem
-												value={value}
-												id={value}
+												value={option.value}
+												id={option.value}
 												required={formElement.required}
 												disabled={
-													formElement.disabledOptions?.[i] ?? false
+													formElement.disabledOptions?.[i] ?? option.disabled ?? false
 												}
 											/>
-											<Label htmlFor={value}>{label}</Label>
+											<Label htmlFor={option.value}>{option.label}</Label>
 										</div>
 									))}
 								</RadioGroup>
@@ -315,17 +315,18 @@ export const RenderFormElement = ({
 				</form.AppField>
 			);
 		case "ToggleGroup": {
-			const options = formElement.options.map(({ label, value }, i) => (
+			const options = formElement.options.map((option, i) => (
 				<ToggleGroupItem
 					name={formElement.name}
-					value={value}
-					key={value}
+					value={option.value}
+					key={option.value}
 					disabled={
-						formElement.disabled || (formElement.disabledOptions?.[i] ?? false)
+						formElement.disabled ||
+						(formElement.disabledOptions?.[i] ?? option.disabled ?? false)
 					}
 					className="flex items-center gap-x-2 px-1"
 				>
-					{label}
+					{option.label}
 				</ToggleGroupItem>
 			));
 			return (
@@ -507,13 +508,15 @@ export const RenderFormElement = ({
 									</SelectTrigger>
 								</field.Field>
 								<SelectContent>
-									{formElement.options.map(({ label, value }, i) => (
+									{formElement.options.map((option, i) => (
 										<SelectItem
-											key={value}
-											value={value}
-											disabled={formElement.disabledOptions?.[i] ?? false}
+											key={option.value}
+											value={option.value}
+											disabled={
+												formElement.disabledOptions?.[i] ?? option.disabled ?? false
+											}
 										>
-											{label}
+											{option.label}
 										</SelectItem>
 									))}
 								</SelectContent>
@@ -560,17 +563,17 @@ export const RenderFormElement = ({
 												placeholder={formElement.placeholder || "Select item"}
 											/>
 										</MultiSelectTrigger>
-										<MultiSelectContent>
+											<MultiSelectContent>
 											<MultiSelectList>
-												{formElement.options.map(({ label, value }, i) => (
+												{formElement.options.map((option, i) => (
 													<MultiSelectItem
-														key={value}
-														value={value}
+														key={option.value}
+														value={option.value}
 														disabled={
-															formElement.disabledOptions?.[i] ?? false
+															formElement.disabledOptions?.[i] ?? option.disabled ?? false
 														}
 													>
-														{label}
+														{option.label}
 													</MultiSelectItem>
 												))}
 											</MultiSelectList>

@@ -207,90 +207,90 @@ function EditorItem({
 						<>
 							<div>
 								<Label className="text-xs">Selection mode</Label>
-						<Select
-							value={element.toggleType}
-							onValueChange={(value: "single" | "multiple") =>
-								onUpdate(element.id, { toggleType: value })
-							}
-						>
-							<SelectTrigger className="mt-1.5 h-8">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="single">Single</SelectItem>
-								<SelectItem value="multiple">Multiple</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-					<div>
-						<Label className="text-xs">Options</Label>
-						<div className="mt-1.5 space-y-2">
-							{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
-								const disabledOptions = element.disabledOptions ?? [];
-								const isDisabled = disabledOptions[i] ?? false;
-								return (
-									<div
-										key={`${element.id}-opt-${i}`}
-										className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-1.5"
-									>
-										<span className="text-sm truncate">{opt}</span>
-										<div className="flex items-center gap-2 shrink-0">
-											<span className="text-xs text-muted-foreground">
-												Disable
-											</span>
-											<Switch
-												checked={isDisabled}
-												onCheckedChange={(checked) => {
-													const updated = [...disabledOptions];
-													while (updated.length <= i) updated.push(false);
-													updated[i] = checked === true;
-													onUpdate(element.id, {
-														disabledOptions: updated,
-													});
-												}}
-											/>
-										</div>
-									</div>
-								);
-							})}
-						</div>
-					</div>
+								<Select
+									value={element.toggleType}
+									onValueChange={(value: "single" | "multiple") =>
+										onUpdate(element.id, { toggleType: value })
+									}
+								>
+									<SelectTrigger className="mt-1.5 h-8">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="single">Single</SelectItem>
+										<SelectItem value="multiple">Multiple</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+							<div>
+								<Label className="text-xs">Options</Label>
+								<div className="mt-1.5 space-y-2">
+									{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
+										const disabledOptions = element.disabledOptions ?? [];
+										const isDisabled = disabledOptions[i] ?? false;
+										return (
+											<div
+												key={`${element.id}-opt-${i}`}
+												className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-1.5"
+											>
+												<span className="text-sm truncate">{opt}</span>
+												<div className="flex items-center gap-2 shrink-0">
+													<span className="text-xs text-muted-foreground">
+														Disable
+													</span>
+													<Switch
+														checked={isDisabled}
+														onCheckedChange={(checked) => {
+															const updated = [...disabledOptions];
+															while (updated.length <= i) updated.push(false);
+															updated[i] = checked === true;
+															onUpdate(element.id, {
+																disabledOptions: updated,
+															});
+														}}
+													/>
+												</div>
+											</div>
+										);
+									})}
+								</div>
+							</div>
 						</>
 					)}
 					{element.type === "Select" && (
 						<div>
 							<Label className="text-xs">Options</Label>
-						<div className="mt-1.5 space-y-2">
-							{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
-								const disabledOptions = element.disabledOptions ?? [];
-								const isDisabled = disabledOptions[i] ?? false;
-								return (
-									<div
-										key={`${element.id}-opt-${i}`}
-										className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-1.5"
-									>
-										<span className="text-sm truncate">{opt}</span>
-										<div className="flex items-center gap-2 shrink-0">
-											<span className="text-xs text-muted-foreground">
-												Disable
-											</span>
-											<Switch
-												checked={isDisabled}
-												onCheckedChange={(checked) => {
-													const updated = [...disabledOptions];
-													while (updated.length <= i) updated.push(false);
-													updated[i] = checked === true;
-													onUpdate(element.id, {
-														disabledOptions: updated,
-													});
-												}}
-											/>
+							<div className="mt-1.5 space-y-2">
+								{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
+									const disabledOptions = element.disabledOptions ?? [];
+									const isDisabled = disabledOptions[i] ?? false;
+									return (
+										<div
+											key={`${element.id}-opt-${i}`}
+											className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-1.5"
+										>
+											<span className="text-sm truncate">{opt}</span>
+											<div className="flex items-center gap-2 shrink-0">
+												<span className="text-xs text-muted-foreground">
+													Disable
+												</span>
+												<Switch
+													checked={isDisabled}
+													onCheckedChange={(checked) => {
+														const updated = [...disabledOptions];
+														while (updated.length <= i) updated.push(false);
+														updated[i] = checked === true;
+														onUpdate(element.id, {
+															disabledOptions: updated,
+														});
+													}}
+												/>
+											</div>
 										</div>
-									</div>
-								);
-							})}
+									);
+								})}
+							</div>
 						</div>
-					</div>
 					)}
 				</div>
 			)}
@@ -377,6 +377,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 	useEffect(() => {
 		form.reset();
 	}, [form]);
+
 
 	return (
 		<form
@@ -623,28 +624,28 @@ export function FormBuilderTab() {
 		const newElement: FormElement =
 			type === "ToggleGroup"
 				? {
-						id: Math.random().toString(36).substr(2, 9),
-						type: "ToggleGroup",
-						label: "New Toggle Group",
-						required: false,
-						toggleType: "single",
-						options: ["Option 1", "Option 2"],
-					}
+					id: Math.random().toString(36).substr(2, 9),
+					type: "ToggleGroup",
+					label: "New Toggle Group",
+					required: false,
+					toggleType: "single",
+					options: ["Option 1", "Option 2"],
+				}
 				: type === "Select"
 					? {
-							id: Math.random().toString(36).substr(2, 9),
-							type: "Select",
-							label: "New Select",
-							required: false,
-							options: ["Option 1", "Option 2"],
-						}
+						id: Math.random().toString(36).substr(2, 9),
+						type: "Select",
+						label: "New Select",
+						required: false,
+						options: ["Option 1", "Option 2"],
+					}
 					: {
-							id: Math.random().toString(36).substr(2, 9),
-							type,
-							label: type === "Heading" ? "New Heading" : `New ${type}`,
-							placeholder: `Enter ${type.toLowerCase()}`,
-							required: false,
-						};
+						id: Math.random().toString(36).substr(2, 9),
+						type,
+						label: type === "Heading" ? "New Heading" : `New ${type}`,
+						placeholder: `Enter ${type.toLowerCase()}`,
+						required: false,
+					};
 		setElements([...elements, newElement]);
 	};
 
