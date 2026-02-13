@@ -118,6 +118,13 @@ type DatePicker = {
 } & React.InputHTMLAttributes<HTMLInputElement> &
   SharedFormProps;
 
+type ImageUpload = {
+  fieldType: "ImageUpload";
+  maxFiles?: number;
+  maxSize?: number; // in bytes
+  accept?: string; // e.g., "image/*" or ".jpg,.png"
+} & SharedFormProps;
+
 type H1 = {
   fieldType: "H1";
   /**
@@ -191,7 +198,8 @@ type FormFieldElement =
   | Select
   | MultiSelect
   | Slider
-  | DatePicker;
+  | DatePicker
+  | ImageUpload;
 
 /**
  * StaticFormElement is a type that represents a static form element

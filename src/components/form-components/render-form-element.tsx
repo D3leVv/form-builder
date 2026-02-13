@@ -41,6 +41,7 @@ import type { FormElement } from "@/types/form-types";
 import { cn } from "@/utils/utils";
 import type { AppForm } from "../../hooks/use-form-builder";
 import { FieldDescription, FieldLegend, FieldSeparator } from "../ui/field";
+import { ImageUploadField } from "./image-upload-field";
 export const RenderFormElement = ({
 	formElement,
 	form,
@@ -563,7 +564,7 @@ export const RenderFormElement = ({
 												placeholder={formElement.placeholder || "Select item"}
 											/>
 										</MultiSelectTrigger>
-											<MultiSelectContent>
+										<MultiSelectContent>
 											<MultiSelectList>
 												{formElement.options.map((option, i) => (
 													<MultiSelectItem
@@ -676,6 +677,50 @@ export const RenderFormElement = ({
 			return <FieldDescription>{formElement.content}</FieldDescription>;
 		case "FieldLegend":
 			return <FieldLegend>{formElement.content}</FieldLegend>;
+		case "ImageUpload":
+			return (
+				<form.AppField name={formElement.name}>
+					{(field) => (
+						<field.FieldSet className="w-full">
+							<field.Field>
+								<ImageUploadField
+									name={formElement.name}
+									label={formElement.label}
+									description={formElement.description}
+									required={formElement.required}
+									disabled={formElement.disabled}
+									maxFiles={formElement.maxFiles}
+									maxSize={formElement.maxSize}
+									accept={formElement.accept}
+									value={
+										(field.state.value as
+											| Array<{
+												file: File | {
+													name: string;
+													size: number;
+													type: string;
+													url: string;
+													id: string;
+												};
+												id: string;
+												preview?: string;
+											}>
+											| undefined) ?? undefined
+									}
+									onChange={(files) => {
+										field.handleChange(files);
+										field.handleBlur();
+									}}
+								/>
+							</field.Field>
+							<field.FieldDescription>
+								{formElement.description}
+							</field.FieldDescription>
+							<field.FieldError />
+						</field.FieldSet>
+					)}
+				</form.AppField>
+			);
 		default:
 			return <div>Invalid Form Element</div>;
 	}

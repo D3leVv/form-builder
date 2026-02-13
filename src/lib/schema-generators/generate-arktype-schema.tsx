@@ -89,7 +89,22 @@ const FIELD_SCHEMA_MAP = new Map<
 			return type(`string >= ${maxLength}`);
 		},
 	],
-	["DatePicker", () => type("Date")],
+	[
+		"DatePicker",
+		() => type("Date"),
+	],
+	[
+		"ImageUpload",
+		() =>
+			type([
+				type({
+					file: "any",
+					id: "string",
+					preview: "string | undefined",
+				}),
+				"[]",
+			]).or("undefined"),
+	],
 	["Checkbox", () => type("boolean")],
 	[
 		"Slider",

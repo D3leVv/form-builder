@@ -87,6 +87,17 @@ export const generateValiSchemaObject = (
 					v.date(),
 				);
 				break;
+			case "ImageUpload":
+				elementSchema = v.optional(
+					v.array(
+						v.object({
+							file: v.any(),
+							id: v.string(),
+							preview: v.optional(v.string()),
+						}),
+					),
+				);
+				break;
 			case "Checkbox":
 				elementSchema = v.boolean();
 				break;
@@ -117,9 +128,9 @@ export const generateValiSchemaObject = (
 					element.type === "single"
 						? v.pipe(v.string(), v.minLength(1, "Please select an item"))
 						: v.pipe(
-								v.array(v.unknown()),
-								v.minLength(1, "Please select at least one item"),
-							);
+							v.array(v.unknown()),
+							v.minLength(1, "Please select at least one item"),
+						);
 				break;
 			case "MultiSelect":
 				elementSchema = v.pipe(
@@ -386,6 +397,11 @@ export const getValiSchemaStringDirect = (
 					case "DatePicker":
 						typeDefinition =
 							"v.pipe(v.string(), v.transform((value) => new Date(value)), v.date())";
+						break;
+
+					case "ImageUpload":
+						typeDefinition =
+							"v.optional(v.array(v.object({ file: v.any(), id: v.string(), preview: v.optional(v.string()) })))";
 						break;
 
 					case "Checkbox":
