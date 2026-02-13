@@ -50,6 +50,7 @@ type BaseFormElement = {
 	label: string;
 	placeholder?: string;
 	required?: boolean;
+	disabled?: boolean;
 	options?: string[];
 	/** For fields with options: true at index i means option i is disabled */
 	disabledOptions?: boolean[];
@@ -186,13 +187,26 @@ function EditorItem({
 					<ChevronDown size={16} className="text-muted-foreground" />
 				</div>
 			</div>
-			{expanded && element.type === "ToggleGroup" && (
+			{expanded && (
 				<div
 					className="px-3 pb-3 pt-0 space-y-3 border-t border-border/50"
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div>
-						<Label className="text-xs">Selection mode</Label>
+					{element.type !== "Heading" && (
+						<div className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-2.5 py-2">
+							<Label className="text-xs">Disable field</Label>
+							<Switch
+								checked={element.disabled ?? false}
+								onCheckedChange={(checked) =>
+									onUpdate(element.id, { disabled: checked === true })
+								}
+							/>
+						</div>
+					)}
+					{element.type === "ToggleGroup" && (
+						<>
+							<div>
+								<Label className="text-xs">Selection mode</Label>
 						<Select
 							value={element.toggleType}
 							onValueChange={(value: "single" | "multiple") =>
@@ -241,14 +255,11 @@ function EditorItem({
 							})}
 						</div>
 					</div>
-				</div>
-			)}
-			{expanded && element.type === "Select" && (
-					<div
-						className="px-3 pb-3 pt-0 border-t border-border/50"
-						onClick={(e) => e.stopPropagation()}
-					>
-						<Label className="text-xs">Options</Label>
+						</>
+					)}
+					{element.type === "Select" && (
+						<div>
+							<Label className="text-xs">Options</Label>
 						<div className="mt-1.5 space-y-2">
 							{(element.options ?? ["Option 1", "Option 2"]).map((opt, i) => {
 								const disabledOptions = element.disabledOptions ?? [];
@@ -280,7 +291,9 @@ function EditorItem({
 							})}
 						</div>
 					</div>
-				)}
+					)}
+				</div>
+			)}
 		</Reorder.Item>
 	);
 }
@@ -413,6 +426,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 										value={(field.state.value as string) ?? ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
+										disabled={element.disabled}
 										className={cn(
 											field.state.meta.errors.length > 0 &&
 											"border-destructive focus-visible:ring-destructive",
@@ -425,6 +439,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 										value={(field.state.value as string) ?? ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
+										disabled={element.disabled}
 										className={cn(
 											field.state.meta.errors.length > 0 &&
 											"border-destructive focus-visible:ring-destructive",
@@ -436,6 +451,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 											id={element.id}
 											checked={field.state.value as boolean | undefined}
 											onCheckedChange={(checked) => field.handleChange(checked)}
+											disabled={element.disabled}
 											className={cn(
 												field.state.meta.errors.length > 0 &&
 												"border-destructive",
@@ -461,6 +477,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 											id={element.id}
 											checked={field.state.value as boolean | undefined}
 											onCheckedChange={(checked) => field.handleChange(checked)}
+											disabled={element.disabled}
 										/>
 										<Label htmlFor={element.id}>{element.label}</Label>
 									</div>
@@ -468,6 +485,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 									<Select
 										value={(field.state.value as string) ?? undefined}
 										onValueChange={field.handleChange}
+										disabled={element.disabled}
 									>
 										<SelectTrigger
 											className={cn(
@@ -496,6 +514,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 								) : element.type === "Date Picker" ? (
 									<Button
 										variant={"outline"}
+										disabled={element.disabled}
 										className={cn(
 											"w-full justify-start text-left font-normal",
 											"text-muted-foreground",
@@ -513,6 +532,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 												type="multiple"
 												value={(field.state.value as string[]) ?? []}
 												onValueChange={field.handleChange}
+												disabled={element.disabled}
 												className={cn(
 													field.state.meta.errors.length > 0 &&
 													"border-destructive focus:ring-destructive",
@@ -537,6 +557,7 @@ function PreviewForm({ elements }: { elements: FormElement[] }) {
 												type="single"
 												value={(field.state.value as string) ?? ""}
 												onValueChange={field.handleChange}
+												disabled={element.disabled}
 												className={cn(
 													field.state.meta.errors.length > 0 &&
 													"border-destructive focus:ring-destructive",
