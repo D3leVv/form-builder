@@ -1,204 +1,122 @@
 "use client";
 
-import { UploadIcon, XIcon, ImageIcon } from "lucide-react";
-import { useCallback, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/utils/utils";
-import { useFileUpload, formatBytes } from "@/hooks/use-file-upload";
-import type { FileWithPreview } from "@/hooks/use-file-upload";
+import { File, Trash } from "lucide-react";
+import React, { ChangeEvent, DragEvent } from "react";
+import { useDropzone } from "react-dropzone";
 
-interface ImageUploadFieldProps {
-	name: string;
-	label?: string;
-	description?: string;
-	required?: boolean;
-	disabled?: boolean;
-	value?: FileWithPreview[];
-	onChange?: (files: FileWithPreview[]) => void;
-	maxFiles?: number;
-	maxSize?: number;
-	accept?: string;
-	className?: string;
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/utils/utils";
+import { ImageUpload } from "@/types/form-types";
+
+
+
+type Files = {
+	value?: File[];
+	multiple: boolean;
+	onChange: (files: File[]) => void;
 }
 
-export function ImageUploadField({
-	name,
-	label,
-	description,
-	required,
-	disabled,
-	value,
-	onChange,
-	maxFiles = 10,
-	maxSize = 5 * 1024 * 1024, // 5MB default
-	accept = "image/*",
-	className,
-}: ImageUploadFieldProps) {
-	const [
-		{ files, isDragging, errors },
-		{
-			handleDragEnter,
-			handleDragLeave,
-			handleDragOver,
-			handleDrop,
-			openFileDialog,
-			removeFile,
-			getInputProps,
-		},
-	] = useFileUpload({
-		maxFiles,
-		maxSize,
-		accept,
-		multiple: true,
-		onFilesChange: onChange,
+
+export function FileUpload(props: ImageUpload & Files) {
+
+	const { getRootProps, getInputProps, isDragActive } = useDropzone({
+		onDrop: (acceptedFiles) => props.onChange(acceptedFiles),
+		accept: props.accept,
+		multiple: props.multiple,
+		maxFiles: props.maxFiles,
+		maxSize: props.maxSize,
 	});
 
-	// Sync external value with internal state
-	useEffect(() => {
-		if (value && value.length > 0 && files.length === 0) {
-			// External value provided, but we don't have a direct way to set files
-			// This is handled by the onChange callback
-		}
-	}, [value, files.length]);
+	console.log(props.value);
 
-	const handleRemove = useCallback(
-		(id: string) => {
-			removeFile(id);
-		},
-		[removeFile],
-	);
-
-	return (
-		<div className={cn("w-full space-y-2", className)}>
-			{label && (
-				<label htmlFor={name} className="text-sm font-medium leading-none">
-					{label}
-					{required && <span className="text-red-500 ml-1">*</span>}
-				</label>
-			)}
-
-			{/* Drop zone */}
-			<div
-				role="button"
-				tabIndex={disabled ? -1 : 0}
-				aria-disabled={disabled}
-				onClick={() => {
-					if (!disabled) openFileDialog();
-				}}
-				onKeyDown={(e) => {
-					if (disabled) return;
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-						openFileDialog();
-					}
-				}}
-				onDragEnter={handleDragEnter}
-				onDragLeave={handleDragLeave}
-				onDragOver={handleDragOver}
-				onDrop={handleDrop}
-				data-dragging={isDragging || undefined}
-				className={cn(
-					"border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50",
-					"has-[input:focus]:border-ring has-[input:focus]:ring-ring/50",
-					"flex min-h-32 flex-col items-center justify-center rounded-lg border border-dashed p-6",
-					"transition-colors has-disabled:pointer-events-none has-disabled:opacity-50",
-					"has-[input:focus]:ring-[3px] cursor-pointer",
-					disabled && "opacity-50 cursor-not-allowed",
-				)}
-			>
-				<input
-					{...getInputProps()}
-					name={name}
-					disabled={disabled}
-					className="sr-only"
-					aria-label="Upload images"
-				/>
-
-				<div className="flex flex-col items-center justify-center text-center gap-2">
-					<ImageIcon className="size-8 text-muted-foreground" />
-					<div className="space-y-1">
-						<p className="text-sm font-medium">
-							Drag images here or click to upload
-						</p>
-						<p className="text-xs text-muted-foreground">
-							{accept === "image/*"
-								? "Supports all image formats"
-								: `Accepts: ${accept}`}
-							{maxSize && ` (max ${formatBytes(maxSize)} per file)`}
-							{maxFiles && maxFiles > 1 && ` (up to ${maxFiles} files)`}
-						</p>
-					</div>
+	const filesList = props.value && props.value?.map((file) => (
+		<li key={file.name} className="relative">
+			<Card className="relative p-4">
+				<div className="absolute right-4 top-1/2 -translate-y-1/2">
 					<Button
 						type="button"
-						variant="outline"
-						size="sm"
-						className="mt-2"
-						disabled={disabled}
+						variant="ghost"
+						size="icon"
+						aria-label="Remove file"
+						onClick={() =>
+							props.onChange(
+								(props.value ?? []).filter((prevFile) => prevFile.name !== file.name)
+							)
+						}
 					>
-						<UploadIcon className="size-4 mr-2" />
-						Select Images
+						<Trash className="h-5 w-5" aria-hidden={true} />
 					</Button>
 				</div>
-			</div>
-
-			{/* Error messages */}
-			{errors.length > 0 && (
-				<div className="space-y-1">
-					{errors.map((error, index) => (
-						<p key={index} className="text-sm text-destructive">
-							{error}
+				<CardContent className="flex items-center space-x-3 p-0">
+					<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted">
+						<File className="h-5 w-5 text-foreground" aria-hidden={true} />
+					</span>
+					<div>
+						<p className="text-pretty font-medium text-foreground">{file.name}</p>
+						<p className="text-pretty mt-0.5 text-sm text-muted-foreground">
+							{file.size} bytes
 						</p>
-					))}
-				</div>
-			)}
+					</div>
+				</CardContent>
+			</Card>
+		</li>
+	));
 
-			{/* Image previews */}
-			{files.length > 0 && (
-				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-					{files.map((fileWithPreview) => (
-						<div
-							key={fileWithPreview.id}
-							className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted"
+	return (
+
+		<div className="">
+			<Label htmlFor={props.name} className="font-medium">
+				{props.label}
+			</Label>
+			<div
+				{...getRootProps()}
+				className={cn(
+					isDragActive
+						? "border-primary bg-primary/10 ring-2 ring-primary/20"
+						: "border-border",
+					"mt-2 flex justify-center rounded-md border border-dashed px-6 py-20 transition-colors duration-200"
+				)}
+			>
+				<div>
+					<File
+						className="mx-auto h-12 w-12 text-muted-foreground/80"
+						aria-hidden={true}
+					/>
+					<div className="mt-4 flex text-muted-foreground">
+						<p>Drag and drop or</p>
+						<label
+							htmlFor="file"
+							className="relative cursor-pointer rounded-sm pl-1 font-medium text-primary hover:text-primary/80 hover:underline hover:underline-offset-4"
 						>
-							{fileWithPreview.preview ? (
-								<img
-									src={fileWithPreview.preview}
-									alt={
-										fileWithPreview.file instanceof File
-											? fileWithPreview.file.name
-											: fileWithPreview.file.name
-									}
-									className="w-full h-full object-cover"
-								/>
-							) : (
-								<div className="w-full h-full flex items-center justify-center">
-									<ImageIcon className="size-8 text-muted-foreground" />
-								</div>
-							)}
-							{!disabled && (
-								<button
-									type="button"
-									onClick={() => handleRemove(fileWithPreview.id)}
-									className="absolute top-2 right-2 p-1 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
-									aria-label="Remove image"
-								>
-									<XIcon className="size-4" />
-								</button>
-							)}
-							<div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 truncate">
-								{fileWithPreview.file instanceof File
-									? fileWithPreview.file.name
-									: fileWithPreview.file.name}
-							</div>
-						</div>
-					))}
+							<span>choose file(s)</span>
+							<input
+								{...getInputProps()}
+								id={props.name}
+								name={props.name}
+								type="file"
+								className="sr-only"
+							/>
+						</label>
+						<p className="text-pretty pl-1">to upload</p>
+					</div>
 				</div>
-			)}
-
-			{/* Description */}
-			{description && (
-				<p className="text-xs text-muted-foreground">{description}</p>
+			</div>
+			<p className="text-pretty mt-2 text-sm leading-5 text-muted-foreground sm:flex sm:items-center sm:justify-between">
+				<span>All file types are allowed to upload.</span>
+				<span className="pl-1 sm:pl-0">Max. size per file: 50MB</span>
+			</p>
+			{filesList?.length && filesList.length > 0 && (
+				<ul role="list" className="mt-4 space-y-4">
+					{filesList}
+				</ul>
 			)}
 		</div>
+
+
 	);
 }

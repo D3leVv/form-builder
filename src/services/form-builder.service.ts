@@ -499,11 +499,16 @@ export const appendElement: AppendElement = (options) => {
 
 	try {
 		formBuilderCollection.update(FORM_ID, (draft) => {
+			const defaultElement = defaultFormElements[fieldType];
+			// Check if this field type supports content property (static elements)
+			const staticFieldTypes = ["H1", "H2", "H3", "FieldDescription", "FieldLegend"] as const;
+			const hasContent = staticFieldTypes.includes(fieldType as any);
+			
 			const newFormElement = {
 				id: id || uuid(),
-				...defaultFormElements[fieldType],
-				content: content || defaultFormElements[fieldType].content,
-				label: content || (defaultFormElements[fieldType] as FormElement).label,
+				...defaultElement,
+				...(hasContent && { content: content || (defaultElement as any).content }),
+				label: content || (defaultElement as FormElement).label,
 				name: name || `${fieldType}_${Date.now()}`,
 				required: true,
 				fieldType,
@@ -1095,12 +1100,16 @@ export const addFormArrayField = (
 	try {
 		formBuilderCollection.update(FORM_ID, (draft) => {
 			const templateElement = defaultFormElements[fieldType];
+			// Check if this field type supports content property (static elements)
+			const staticFieldTypes = ["H1", "H2", "H3", "FieldDescription", "FieldLegend"] as const;
+			const hasContent = staticFieldTypes.includes(fieldType as any);
+			
 			const newFormElement = {
 				id: uuid(),
 				...templateElement,
-				content: templateElement.content,
+				...(hasContent && { content: (templateElement as any).content }),
 				label:
-					(templateElement as FormElement).label || templateElement.content,
+					(templateElement as FormElement).label || (hasContent ? (templateElement as any).content : undefined),
 				name: `${fieldType}_${Date.now()}`.replace(/-/g, "_"),
 				required: true,
 				fieldType,

@@ -113,8 +113,9 @@ export const defaultFormElements: DefaultFormElements = {
     name: "image-upload",
     label: "Image Upload",
     description: "Upload one or more images",
+    multiple: true,
     maxFiles: 10,
     maxSize: 5 * 1024 * 1024, // 5MB
-    accept: "image/*",
+    accept: { "image/*": [] },
   },
 };

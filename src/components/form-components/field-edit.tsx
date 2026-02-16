@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Reorder } from "motion/react";
 import * as React from "react";
+import type { Accept } from "react-dropzone";
 import { RenderFormElement } from "@/components/form-components/render-form-element";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,13 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useAppForm } from "@/components/ui/tanstack-form";
 import type {
 	FormElement,
@@ -60,6 +68,49 @@ const inputTypes = [
 		label: "Phone number",
 	},
 ];
+
+/** File type presets matching react-dropzone Accept type */
+const ACCEPT_PRESETS: Record<string, Accept> = {
+	"image/*": { "image/*": [] },
+	"image/jpeg": { "image/jpeg": [".jpeg", ".jpg"] },
+	"image/png": { "image/png": [".png"] },
+	"image/webp": { "image/webp": [".webp"] },
+	"image/gif": { "image/gif": [".gif"] },
+	"application/pdf": { "application/pdf": [".pdf"] },
+	"images-and-pdf": {
+		"image/*": [],
+		"application/pdf": [".pdf"],
+	},
+};
+
+const ACCEPT_PRESET_LABELS: Record<string, string> = {
+	"image/*": "All images",
+	"image/jpeg": "JPEG only",
+	"image/png": "PNG only",
+	"image/webp": "WebP only",
+	"image/gif": "GIF only",
+	"application/pdf": "PDF only",
+	"images-and-pdf": "Images and PDF",
+};
+
+function getAcceptPresetKey(accept: Accept | string | undefined): string {
+	if (accept == null) return "image/*";
+	if (typeof accept === "string")
+		return accept in ACCEPT_PRESETS ? accept : "image/*";
+	if (Object.keys(accept).length === 0) return "image/*";
+	const key = Object.keys(ACCEPT_PRESETS).find((presetKey) => {
+		const preset = ACCEPT_PRESETS[presetKey];
+		const aKeys = Object.keys(accept).sort().join(",");
+		const pKeys = Object.keys(preset).sort().join(",");
+		if (aKeys !== pKeys) return false;
+		return Object.keys(preset).every(
+			(k) =>
+				Array.from(accept[k] ?? []).sort().join(",") ===
+				Array.from(preset[k]).sort().join(","),
+		);
+	});
+	return key ?? "image/*";
+}
 
 function OptionsList({
 	options = [],
@@ -145,7 +196,7 @@ function OptionsList({
 							value={option}
 							className="flex items-center gap-2 py-2 pr-2 pl-4 border rounded-md cursor-grab active:cursor-grabbing group bg-secondary"
 						>
-							<LucideGripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+							<LucideGripVertical className="h-4 w-4 shrink-0 text-muted-foreground" />
 							{editingIndex === index ? (
 								<>
 									<div className="flex-1 space-y-2">
@@ -308,7 +359,7 @@ function FormElementAttributes({
 									required: true,
 									className: "border-secondary",
 								}}
-								form={form as AppForm}
+								form={form as unknown as AppForm}
 							/>
 						</div>
 					) : (
@@ -322,7 +373,7 @@ function FormElementAttributes({
 									type: "text",
 									required: true,
 								}}
-								form={form as AppForm}
+								form={form as unknown as AppForm}
 							/>
 							<div className="flex items-center justify-between gap-4 w-full">
 								<RenderFormElement
@@ -335,7 +386,7 @@ function FormElementAttributes({
 										required: true,
 										className: "outline-secondary",
 									}}
-									form={form as AppForm}
+									form={form as unknown as AppForm}
 								/>
 								<RenderFormElement
 									formElement={{
@@ -346,7 +397,7 @@ function FormElementAttributes({
 										type: "text",
 										required: true,
 									}}
-									form={form as AppForm}
+									form={form as unknown as AppForm}
 								/>
 							</div>
 							<RenderFormElement
@@ -357,7 +408,7 @@ function FormElementAttributes({
 									fieldType: "Input",
 									placeholder: "Add a description",
 								}}
-								form={form as AppForm}
+								form={form as unknown as AppForm}
 							/>
 							{fieldType === "Input" && (
 								<RenderFormElement
@@ -371,7 +422,7 @@ function FormElementAttributes({
 										required: true,
 										value: formElement.type,
 									}}
-									form={form as AppForm}
+									form={form as unknown as AppForm}
 								/>
 							)}
 							{fieldType === "Slider" && (
@@ -386,7 +437,7 @@ function FormElementAttributes({
 											defaultValue: formElement.min,
 											required: true,
 										}}
-										form={form as AppForm}
+										form={form as unknown as AppForm}
 									/>
 									<RenderFormElement
 										formElement={{
@@ -398,7 +449,7 @@ function FormElementAttributes({
 											defaultValue: formElement.max,
 											required: true,
 										}}
-										form={form as AppForm}
+										form={form as unknown as AppForm}
 									/>
 									<RenderFormElement
 										formElement={{
@@ -410,7 +461,7 @@ function FormElementAttributes({
 											defaultValue: formElement.step,
 											required: true,
 										}}
-										form={form as AppForm}
+										form={form as unknown as AppForm}
 									/>
 								</div>
 							)}
@@ -429,9 +480,100 @@ function FormElementAttributes({
 										required: true,
 										type: "single",
 									}}
-									form={form as AppForm}
+									form={form as unknown as AppForm}
 								/>
 							)}
+							{fieldType === "ImageUpload" && (() => {
+								const values = form.baseStore.state.values as Partial<{
+									accept: Accept | string;
+									multiple: boolean;
+									maxSize: number;
+									maxFiles: number;
+								}>;
+								return (
+									<div className="space-y-4 w-full">
+										<RenderFormElement
+											formElement={{
+												id: formElement.id,
+												name: "multiple",
+												label: "Allow multiple images",
+												fieldType: "Checkbox",
+											}}
+											form={form as unknown as AppForm}
+										/>
+										<div className="space-y-2">
+											<Label className="text-sm font-medium">Accepted file types</Label>
+											<Select
+												value={getAcceptPresetKey(values.accept)}
+												onValueChange={(key) =>
+													form.setFieldValue(
+														"accept",
+														ACCEPT_PRESETS[key] ?? ACCEPT_PRESETS["image/*"],
+													)
+												}
+											>
+												<SelectTrigger className="w-full">
+													<SelectValue placeholder="Select file types" />
+												</SelectTrigger>
+												<SelectContent>
+													{Object.keys(ACCEPT_PRESETS).map((key) => (
+														<SelectItem key={key} value={key}>
+															{ACCEPT_PRESET_LABELS[key] ?? key}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</div>
+										<div className="space-y-2">
+											<Label htmlFor={`${formElement.id}-maxSize`} className="text-sm font-medium">
+												Max file size (MB)
+											</Label>
+											<Input
+												id={`${formElement.id}-maxSize`}
+												type="number"
+												min={0}
+												step={0.5}
+												value={
+													values.maxSize != null
+														? Math.round((values.maxSize / (1024 * 1024)) * 10) / 10
+														: ""
+												}
+												onChange={(e) => {
+													const mb = e.target.valueAsNumber;
+													form.setFieldValue(
+														"maxSize",
+														Number.isFinite(mb) && mb >= 0 ? Math.round(mb * 1024 * 1024) : undefined,
+													);
+												}}
+												placeholder="e.g. 5"
+												className="w-full"
+											/>
+										</div>
+										{values.multiple && (
+											<div className="space-y-2">
+												<Label htmlFor={`${formElement.id}-maxFiles`} className="text-sm font-medium">
+													Maximum files to upload
+												</Label>
+												<Input
+													id={`${formElement.id}-maxFiles`}
+													type="number"
+													min={1}
+													value={values.maxFiles ?? ""}
+													onChange={(e) => {
+														const n = e.target.valueAsNumber;
+														form.setFieldValue(
+															"maxFiles",
+															Number.isInteger(n) && n >= 1 ? n : undefined,
+														);
+													}}
+													placeholder="e.g. 10"
+													className="w-full"
+												/>
+											</div>
+										)}
+									</div>
+								);
+							})()}
 							{isFieldWithOptions && (
 								<OptionsList
 									options={formElement.options || []}
@@ -447,7 +589,7 @@ function FormElementAttributes({
 											label: "Required",
 											fieldType: "Checkbox",
 										}}
-										form={form as AppForm}
+										form={form as unknown as AppForm}
 									/>
 								</div>
 								<RenderFormElement
@@ -457,7 +599,7 @@ function FormElementAttributes({
 										label: "Disabled",
 										fieldType: "Checkbox",
 									}}
-									form={form as AppForm}
+									form={form as unknown as AppForm}
 								/>
 							</div>
 						</div>
@@ -531,8 +673,8 @@ export function FieldCustomizationView({
 					</DrawerHeader>
 					<SavedFormElementAttributes
 						fieldIndex={fieldIndex}
-						stepIndex={stepIndex}
-						j={j}
+						stepIndex={stepIndex ?? 0}
+						j={j ?? 0}
 						formElement={formElement}
 						close={close}
 					/>
@@ -559,8 +701,8 @@ export function FieldCustomizationView({
 				</DialogHeader>
 				<SavedFormElementAttributes
 					fieldIndex={fieldIndex}
-					stepIndex={stepIndex}
-					j={j}
+					stepIndex={stepIndex ?? 0}
+					j={j ?? 0}
 					formElement={formElement}
 					close={close}
 				/>

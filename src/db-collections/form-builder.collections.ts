@@ -148,9 +148,10 @@ const DatePickerSchema = v.object({
 const ImageUploadSchema = v.object({
   ...SharedFormPropsSchema.entries,
   fieldType: v.literal("ImageUpload"),
+  multiple: v.optional(v.boolean(), true),
   maxFiles: v.optional(v.number()),
   maxSize: v.optional(v.number()), // in bytes
-  accept: v.optional(v.string()), // e.g., "image/*" or ".jpg,.png"
+  accept: v.optional(v.union([v.string(), v.record(v.string(), v.array(v.string()))])),
 });
 
 // Static Elements

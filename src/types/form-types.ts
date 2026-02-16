@@ -19,6 +19,7 @@ type SharedFormProps = {
   description?: string;
   required?: boolean;
   static?: boolean;
+  disabled?: boolean;
 };
 
 type Input = {
@@ -118,11 +119,12 @@ type DatePicker = {
 } & React.InputHTMLAttributes<HTMLInputElement> &
   SharedFormProps;
 
-type ImageUpload = {
+export type ImageUpload = {
   fieldType: "ImageUpload";
   maxFiles?: number;
   maxSize?: number; // in bytes
-  accept?: string; // e.g., "image/*" or ".jpg,.png"
+  accept?: { [key: string]: readonly string[] };
+  multiple: boolean;
 } & SharedFormProps;
 
 type H1 = {

@@ -95,11 +95,12 @@ export const useFormBuilder = (): {
 						? revalidateLogic({ mode: "blur", modeAfterSubmission: "blur" })
 						: revalidateLogic({ mode: "blur", modeAfterSubmission: "blur" }),
 		validators: validators,
-		onSubmit: async () => {
+		onSubmit: async ({ value }) => {
+			console.log(value);
 			try {
 				// Simulate async submission
 				await new Promise((resolve) => setTimeout(resolve, 1000));
-				toast.success("Form submitted successfully!");
+				toast.success("Form submitted successfully!: " + JSON.stringify(value));
 			} catch (_error) {
 				toast.error("Failed to submit form. Please try again.");
 			}
@@ -123,7 +124,7 @@ export const useFormBuilder = (): {
 					}
 				}
 				firstInput?.focus();
-			} catch (_error) {}
+			} catch (_error) { }
 		},
 	});
 	const { reset } = form;

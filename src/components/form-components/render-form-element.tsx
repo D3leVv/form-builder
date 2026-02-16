@@ -41,7 +41,7 @@ import type { FormElement } from "@/types/form-types";
 import { cn } from "@/utils/utils";
 import type { AppForm } from "../../hooks/use-form-builder";
 import { FieldDescription, FieldLegend, FieldSeparator } from "../ui/field";
-import { ImageUploadField } from "./image-upload-field";
+import { FileUpload } from "./image-upload-field";
 export const RenderFormElement = ({
 	formElement,
 	form,
@@ -683,7 +683,7 @@ export const RenderFormElement = ({
 					{(field) => (
 						<field.FieldSet className="w-full">
 							<field.Field>
-								<ImageUploadField
+								<FileUpload
 									name={formElement.name}
 									label={formElement.label}
 									description={formElement.description}
@@ -692,21 +692,9 @@ export const RenderFormElement = ({
 									maxFiles={formElement.maxFiles}
 									maxSize={formElement.maxSize}
 									accept={formElement.accept}
-									value={
-										(field.state.value as
-											| Array<{
-												file: File | {
-													name: string;
-													size: number;
-													type: string;
-													url: string;
-													id: string;
-												};
-												id: string;
-												preview?: string;
-											}>
-											| undefined) ?? undefined
-									}
+									multiple={formElement.multiple}
+									fieldType="ImageUpload"
+									value={field.state.value as File[] | undefined}
 									onChange={(files) => {
 										field.handleChange(files);
 										field.handleBlur();

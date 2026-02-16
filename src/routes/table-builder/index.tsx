@@ -133,7 +133,7 @@ function RouteComponent() {
 	}, [tableData.table.data, filters, tableData.table.columns]);
 	// Row dragging state
 	const dataIds = useMemo(() => {
-		return filteredData.map((item) =>
+		return filteredData.map((item: any) =>
 			tableData.table.data.indexOf(item).toString(),
 		);
 	}, [filteredData, tableData.table.data]);
