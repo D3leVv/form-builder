@@ -1,6 +1,7 @@
 import { Check, CircleX, LucideGripVertical, PlusCircle } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import type { Accept } from "react-dropzone";
 import { FormElementsDropdown } from "@/components/form-components/form-elements-dropdown";
 import { RenderFormElement } from "@/components/form-components/render-form-element";
 import { StepContainer } from "@/components/form-components/step-container";
@@ -15,6 +16,13 @@ import { Button } from "@/components/ui/button";
 import { DeleteIcon } from "@/components/ui/delete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { SquarePenIcon } from "@/components/ui/square-pen";
 import { useAppForm } from "@/components/ui/tanstack-form";
 import type {
@@ -37,6 +45,11 @@ import {
 	updateFormArrayField,
 	updateFormArrayProperties,
 } from "@/services/form-builder.service";
+import {
+	ACCEPT_PRESETS,
+	ACCEPT_PRESET_LABELS,
+	getAcceptPresetKey,
+} from "@/lib/image-upload-accept";
 import type { Option } from "@/types/form-types";
 import { isStatic, logger } from "@/utils/utils";
 import { Switch } from "../ui/switch";
@@ -531,6 +544,113 @@ const FormElementEditor = ({
 								form={form as unknown as AppForm}
 							/>
 						)}
+						{fieldType === "ImageUpload" && (() => {
+							const values = form.baseStore.state.values as Partial<{
+								accept: Accept | string;
+								multiple: boolean;
+								maxSize: number;
+								maxFiles: number;
+							}>;
+							return (
+								<div className="space-y-4 w-full">
+
+									<RenderFormElement
+										formElement={{
+											id: formElement.id,
+											name: "accept",
+											label: "Accepted file types",
+											fieldType: "Select",
+											options: Object.keys(ACCEPT_PRESETS).map((key) => ({
+												value: key,
+												label: ACCEPT_PRESET_LABELS[key] ?? key,
+											})),
+											placeholder: "Select file types",
+											value: getAcceptPresetKey(values.accept),
+										}}
+										form={form as unknown as AppForm}
+									/>
+									<RenderFormElement
+										formElement={{
+											id: formElement.id,
+											name: "multiple",
+											label: "Allow multiple images",
+											fieldType: "Checkbox",
+										}}
+										form={form as unknown as AppForm}
+									/>
+									{/* <div className="space-y-2">
+										<Label className="text-sm font-medium">Accepted file types</Label>
+										<Select
+											value={getAcceptPresetKey(values.accept)}
+											onValueChange={(key) =>
+												form.setFieldValue(
+													"accept",
+													ACCEPT_PRESETS[key] ?? ACCEPT_PRESETS["image/*"],
+												)
+											}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Select file types" />
+											</SelectTrigger>
+											<SelectContent>
+												{Object.keys(ACCEPT_PRESETS).map((key) => (
+													<SelectItem key={key} value={key}>
+														{ACCEPT_PRESET_LABELS[key] ?? key}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div> */}
+									{/* <div className="space-y-2">
+										<Label htmlFor={`${formElement.id}-maxSize`} className="text-sm font-medium">
+											Max file size (MB)
+										</Label>
+										<Input
+											id={`${formElement.id}-maxSize`}
+											type="number"
+											min={0}
+											step={0.5}
+											value={
+												values.maxSize != null
+													? Math.round((values.maxSize / (1024 * 1024)) * 10) / 10
+													: ""
+											}
+											onChange={(e) => {
+												const mb = e.target.valueAsNumber;
+												form.setFieldValue(
+													"maxSize",
+													Number.isFinite(mb) && mb >= 0 ? Math.round(mb * 1024 * 1024) : undefined,
+												);
+											}}
+											placeholder="e.g. 5"
+											className="w-full"
+										/>
+									</div>
+									{values.multiple && (
+										<div className="space-y-2">
+											<Label htmlFor={`${formElement.id}-maxFiles`} className="text-sm font-medium">
+												Maximum files to upload
+											</Label>
+											<Input
+												id={`${formElement.id}-maxFiles`}
+												type="number"
+												min={1}
+												value={values.maxFiles ?? ""}
+												onChange={(e) => {
+													const n = e.target.valueAsNumber;
+													form.setFieldValue(
+														"maxFiles",
+														Number.isInteger(n) && n >= 1 ? n : undefined,
+													);
+												}}
+												placeholder="e.g. 10"
+												className="w-full"
+											/>
+										</div>
+									)} */}
+								</div>
+							);
+						})()}
 						{isFieldWithOptions && (
 							<form.AppField name="options">
 								{(field) => (
@@ -635,7 +755,7 @@ const EditFormItem = (props: EditFormItemProps) => {
 						<AccordionTrigger className="px-2 py-1 text-sm text-muted-foreground hover:no-underline">
 							Customize Field
 						</AccordionTrigger>
-						<AccordionContent className="px-2 pb-4">
+						<AccordionContent className="max-h-[min(70vh,480px)] overflow-y-auto px-2 pb-4">
 							<FormElementEditor
 								formElement={element as FormElement}
 								fieldIndex={fieldIndex}
@@ -743,7 +863,7 @@ const FormArrayFieldItem = ({
 						<AccordionTrigger className="px-2 py-1 text-sm text-muted-foreground hover:no-underline">
 							Customize Field
 						</AccordionTrigger>
-						<AccordionContent className="px-2 pb-4">
+						<AccordionContent className="max-h-[min(70vh,480px)] overflow-y-auto px-2 pb-4">
 							<FormElementEditor
 								formElement={element as FormElement}
 								fieldIndex={fieldIndex}

@@ -1,7 +1,6 @@
 "use client";
 
 import { File, Trash } from "lucide-react";
-import React, { ChangeEvent, DragEvent } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn } from "@/utils/utils";
 import { ImageUpload } from "@/types/form-types";
+import { ACCEPT_PRESETS } from "@/lib/image-upload-accept";
 
 
 
@@ -26,15 +26,15 @@ export function FileUpload(props: ImageUpload & Files) {
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => props.onChange(acceptedFiles),
-		accept: props.accept,
+		accept: ACCEPT_PRESETS[props.accept as unknown as keyof typeof ACCEPT_PRESETS],
 		multiple: props.multiple,
 		maxFiles: props.maxFiles,
 		maxSize: props.maxSize,
 	});
 
-	console.log(props.value);
 
-	const filesList = props.value && props.value?.map((file) => (
+
+	const filesList = props.value && Array.isArray(props.value) ? props.value?.map((file) => (
 		<li key={file.name} className="relative">
 			<Card className="relative p-4">
 				<div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -65,7 +65,9 @@ export function FileUpload(props: ImageUpload & Files) {
 				</CardContent>
 			</Card>
 		</li>
-	));
+	)) : [];
+
+	console.log("filesList", filesList);
 
 	return (
 
@@ -106,11 +108,7 @@ export function FileUpload(props: ImageUpload & Files) {
 					</div>
 				</div>
 			</div>
-			<p className="text-pretty mt-2 text-sm leading-5 text-muted-foreground sm:flex sm:items-center sm:justify-between">
-				<span>All file types are allowed to upload.</span>
-				<span className="pl-1 sm:pl-0">Max. size per file: 50MB</span>
-			</p>
-			{filesList?.length && filesList.length > 0 && (
+			{filesList && (
 				<ul role="list" className="mt-4 space-y-4">
 					{filesList}
 				</ul>

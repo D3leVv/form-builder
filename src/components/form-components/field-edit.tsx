@@ -10,6 +10,11 @@ import { Reorder } from "motion/react";
 import * as React from "react";
 import type { Accept } from "react-dropzone";
 import { RenderFormElement } from "@/components/form-components/render-form-element";
+import {
+	ACCEPT_PRESETS,
+	ACCEPT_PRESET_LABELS,
+	getAcceptPresetKey,
+} from "@/lib/image-upload-accept";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -68,49 +73,6 @@ const inputTypes = [
 		label: "Phone number",
 	},
 ];
-
-/** File type presets matching react-dropzone Accept type */
-const ACCEPT_PRESETS: Record<string, Accept> = {
-	"image/*": { "image/*": [] },
-	"image/jpeg": { "image/jpeg": [".jpeg", ".jpg"] },
-	"image/png": { "image/png": [".png"] },
-	"image/webp": { "image/webp": [".webp"] },
-	"image/gif": { "image/gif": [".gif"] },
-	"application/pdf": { "application/pdf": [".pdf"] },
-	"images-and-pdf": {
-		"image/*": [],
-		"application/pdf": [".pdf"],
-	},
-};
-
-const ACCEPT_PRESET_LABELS: Record<string, string> = {
-	"image/*": "All images",
-	"image/jpeg": "JPEG only",
-	"image/png": "PNG only",
-	"image/webp": "WebP only",
-	"image/gif": "GIF only",
-	"application/pdf": "PDF only",
-	"images-and-pdf": "Images and PDF",
-};
-
-function getAcceptPresetKey(accept: Accept | string | undefined): string {
-	if (accept == null) return "image/*";
-	if (typeof accept === "string")
-		return accept in ACCEPT_PRESETS ? accept : "image/*";
-	if (Object.keys(accept).length === 0) return "image/*";
-	const key = Object.keys(ACCEPT_PRESETS).find((presetKey) => {
-		const preset = ACCEPT_PRESETS[presetKey];
-		const aKeys = Object.keys(accept).sort().join(",");
-		const pKeys = Object.keys(preset).sort().join(",");
-		if (aKeys !== pKeys) return false;
-		return Object.keys(preset).every(
-			(k) =>
-				Array.from(accept[k] ?? []).sort().join(",") ===
-				Array.from(preset[k]).sort().join(","),
-		);
-	});
-	return key ?? "image/*";
-}
 
 function OptionsList({
 	options = [],
@@ -501,76 +463,6 @@ function FormElementAttributes({
 											}}
 											form={form as unknown as AppForm}
 										/>
-										<div className="space-y-2">
-											<Label className="text-sm font-medium">Accepted file types</Label>
-											<Select
-												value={getAcceptPresetKey(values.accept)}
-												onValueChange={(key) =>
-													form.setFieldValue(
-														"accept",
-														ACCEPT_PRESETS[key] ?? ACCEPT_PRESETS["image/*"],
-													)
-												}
-											>
-												<SelectTrigger className="w-full">
-													<SelectValue placeholder="Select file types" />
-												</SelectTrigger>
-												<SelectContent>
-													{Object.keys(ACCEPT_PRESETS).map((key) => (
-														<SelectItem key={key} value={key}>
-															{ACCEPT_PRESET_LABELS[key] ?? key}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor={`${formElement.id}-maxSize`} className="text-sm font-medium">
-												Max file size (MB)
-											</Label>
-											<Input
-												id={`${formElement.id}-maxSize`}
-												type="number"
-												min={0}
-												step={0.5}
-												value={
-													values.maxSize != null
-														? Math.round((values.maxSize / (1024 * 1024)) * 10) / 10
-														: ""
-												}
-												onChange={(e) => {
-													const mb = e.target.valueAsNumber;
-													form.setFieldValue(
-														"maxSize",
-														Number.isFinite(mb) && mb >= 0 ? Math.round(mb * 1024 * 1024) : undefined,
-													);
-												}}
-												placeholder="e.g. 5"
-												className="w-full"
-											/>
-										</div>
-										{values.multiple && (
-											<div className="space-y-2">
-												<Label htmlFor={`${formElement.id}-maxFiles`} className="text-sm font-medium">
-													Maximum files to upload
-												</Label>
-												<Input
-													id={`${formElement.id}-maxFiles`}
-													type="number"
-													min={1}
-													value={values.maxFiles ?? ""}
-													onChange={(e) => {
-														const n = e.target.valueAsNumber;
-														form.setFieldValue(
-															"maxFiles",
-															Number.isInteger(n) && n >= 1 ? n : undefined,
-														);
-													}}
-													placeholder="e.g. 10"
-													className="w-full"
-												/>
-											</div>
-										)}
 									</div>
 								);
 							})()}

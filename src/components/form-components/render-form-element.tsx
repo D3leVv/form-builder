@@ -668,7 +668,7 @@ export const RenderFormElement = ({
 		case "H3":
 			return (
 				<h3 className="mt-3 font-semiboldbold text-lg">
-					{formElement.content} content
+					{formElement.content}
 				</h3>
 			);
 		case "Separator":

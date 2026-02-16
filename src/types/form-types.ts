@@ -123,7 +123,7 @@ export type ImageUpload = {
   fieldType: "ImageUpload";
   maxFiles?: number;
   maxSize?: number; // in bytes
-  accept?: { [key: string]: readonly string[] };
+  accept?: { [key: string]: readonly unknown[] };
   multiple: boolean;
 } & SharedFormProps;
 
